@@ -12,8 +12,6 @@ import {
   Clock, 
   ClipboardCheck, 
   ShoppingCart, 
-  Moon, 
-  Sun, 
   X,
   FileText
 } from 'lucide-react';
@@ -34,8 +32,6 @@ interface CommandPaletteProps {
   onOpenAudit: () => void;
   onOpenPurchases: () => void;
   onOpenSustainability: () => void;
-  isDarkMode: boolean;
-  onToggleDarkMode: () => void;
 }
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
@@ -52,8 +48,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   onOpenAudit,
   onOpenPurchases,
   onOpenSustainability,
-  isDarkMode,
-  onToggleDarkMode,
 }) => {
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -97,22 +91,16 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   }).slice(0, 5);
 
   const quickActions = [
-    { label: 'Registrar Entrada de Material', icon: Plus, action: () => onOpenMovement('entrada'), color: 'text-emerald-500' },
-    { label: 'Registrar Saída / Requisição de Professor', icon: Minus, action: () => onOpenMovement('saida'), color: 'text-rose-500' },
-    { label: 'Bipar Código / Scanner de Câmera', icon: Camera, action: onOpenScanner, color: 'text-blue-500' },
-    { label: 'Gerador de Etiquetas com QR Code', icon: Tag, action: onOpenLabels, color: 'text-amber-500' },
-    { label: 'Mapeamento Visual do Depósito (Planta 2D)', icon: MapPin, action: onOpenMap, color: 'text-indigo-500' },
-    { label: 'Kits Prontos de Material Escolar', icon: Package, action: onOpenKits, color: 'text-purple-500' },
-    { label: 'Controle de Empréstimos & Devoluções', icon: Clock, action: onOpenLoans, color: 'text-blue-600' },
-    { label: 'Auditoria & Inventário Cego de Estoque', icon: ClipboardCheck, action: onOpenAudit, color: 'text-emerald-600' },
-    { label: 'Planejador Semestral de Compras', icon: ShoppingCart, action: onOpenPurchases, color: 'text-indigo-600' },
-    { label: 'Painel de Sustentabilidade (Depósito Verde)', icon: FileText, action: onOpenSustainability, color: 'text-teal-600' },
-    { 
-      label: isDarkMode ? 'Mudar para Tema Claro' : 'Mudar para Modo Noturno (Dark)', 
-      icon: isDarkMode ? Sun : Moon, 
-      action: onToggleDarkMode, 
-      color: 'text-slate-400' 
-    },
+    { label: 'Registrar Entrada de Material', icon: Plus, action: () => onOpenMovement('entrada'), color: 'text-emerald-700 bg-[#EAF6ED]' },
+    { label: 'Registrar Saída / Requisição de Professor', icon: Minus, action: () => onOpenMovement('saida'), color: 'text-amber-800 bg-[#FFF7ED]' },
+    { label: 'Bipar Código / Scanner de Câmera', icon: Camera, action: onOpenScanner, color: 'text-sky-700 bg-[#F0F9FF]' },
+    { label: 'Gerador de Etiquetas com QR Code', icon: Tag, action: onOpenLabels, color: 'text-amber-700 bg-[#FFFBEB]' },
+    { label: 'Mapeamento Visual do Depósito (Planta 2D)', icon: MapPin, action: onOpenMap, color: 'text-emerald-700 bg-[#ECFDF5]' },
+    { label: 'Kits Prontos de Material Escolar', icon: Package, action: onOpenKits, color: 'text-purple-700 bg-[#FAF5FF]' },
+    { label: 'Controle de Empréstimos & Devoluções', icon: Clock, action: onOpenLoans, color: 'text-sky-800 bg-[#F0F9FF]' },
+    { label: 'Auditoria & Inventário Cego de Estoque', icon: ClipboardCheck, action: onOpenAudit, color: 'text-slate-700 bg-[#F8FAFC]' },
+    { label: 'Planejador Semestral de Compras', icon: ShoppingCart, action: onOpenPurchases, color: 'text-emerald-800 bg-[#EAF6ED]' },
+    { label: 'Painel de Sustentabilidade (Depósito Verde)', icon: FileText, action: onOpenSustainability, color: 'text-teal-700 bg-[#F0FDFA]' },
   ].filter(act => !query.trim() || act.label.toLowerCase().includes(query.toLowerCase()));
 
   const handleAction = (act: () => void) => {
@@ -122,33 +110,33 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-[#0c1711]/50 backdrop-blur-xs">
-      <div className="bg-white dark:bg-[#0f1d16] rounded-3xl shadow-2xl border border-[#d8eadc] dark:border-[#1d3827] w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-stone-900/30 backdrop-blur-xs">
+      <div className="bg-white rounded-2xl shadow-xl border border-stone-200 w-full max-w-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Search Input Bar */}
-        <div className="p-4 border-b border-[#d8eadc] dark:border-[#1d3827] flex items-center gap-3 bg-[#f8fbf9] dark:bg-[#122419]">
-          <Search className="w-5 h-5 text-[#4f7d61]" />
+        <div className="p-3.5 border-b border-stone-200 flex items-center gap-2.5 bg-[#FAFBF9]">
+          <Search className="w-5 h-5 text-stone-400" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Digite para buscar materiais, ações ou atalhos..."
-            className="w-full bg-transparent text-sm text-[#143e26] dark:text-[#e4f6ec] placeholder:text-[#6a927a] focus:outline-hidden"
+            className="w-full bg-transparent text-sm text-stone-900 placeholder:text-stone-400 focus:outline-hidden font-medium"
           />
-          <kbd className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono font-bold text-[#426a52] dark:text-[#8ea998] bg-[#eef7f1] dark:bg-[#163122] rounded-lg border border-[#cbe4d4] dark:border-[#224b34]">
+          <kbd className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono font-bold text-stone-500 bg-stone-100 rounded border border-stone-200">
             ESC
           </kbd>
-          <button onClick={onClose} className="text-[#527d63] hover:text-[#184f2f] p-1">
+          <button onClick={onClose} className="text-stone-400 hover:text-stone-700 p-1">
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Results Container */}
-        <div className="max-h-96 overflow-y-auto divide-y divide-[#e5f1e8] dark:divide-[#1d3827] p-2.5 text-xs">
+        <div className="max-h-96 overflow-y-auto divide-y divide-stone-100 p-2 text-xs">
           {/* Matching Items Section */}
           {filteredItems.length > 0 && (
             <div className="pb-2">
-              <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-[#527d63] dark:text-[#8eb89e]">
+              <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-stone-500">
                 Materiais Cadastrados
               </div>
               {filteredItems.map((item) => (
@@ -159,22 +147,22 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     onSelectItem(item);
                     onClose();
                   }}
-                  className="w-full px-3 py-2 text-left rounded-xl hover:bg-[#f2f9f4] dark:hover:bg-[#163122] flex items-center justify-between group transition-colors"
+                  className="w-full px-3 py-2 text-left rounded-xl hover:bg-[#FAFBF9] flex items-center justify-between group transition-colors"
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-[#255636] dark:text-[#a0dbb7] bg-[#e7f4eb] dark:bg-[#163122] px-2 py-0.5 rounded-lg border border-[#cfe6d6] dark:border-[#224831] font-bold">
+                    <span className="font-mono text-stone-600 bg-stone-100 px-1.5 py-0.5 rounded border border-stone-200 font-semibold">
                       {item.code}
                     </span>
                     <div>
-                      <div className="font-bold text-[#143d25] dark:text-[#e4f6ec] group-hover:text-[#287b4a] dark:group-hover:text-[#8ee2ae]">
+                      <div className="font-semibold text-stone-900 group-hover:text-emerald-800">
                         {item.name}
                       </div>
-                      <div className="text-[11px] text-[#527d63] dark:text-[#8eb89e]">
+                      <div className="text-[11px] text-stone-500">
                         {item.location || 'Depósito Central'}
                       </div>
                     </div>
                   </div>
-                  <span className="font-mono font-extrabold text-[#1f663c] dark:text-[#8ee2ae]">
+                  <span className="font-mono font-bold text-stone-800">
                     {item.quantity} {item.unit}
                   </span>
                 </button>
@@ -184,7 +172,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
           {/* Quick Actions Section */}
           <div className="pt-2">
-            <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-[#527d63] dark:text-[#8eb89e]">
+            <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-stone-500">
               Ações Rápidas & Ferramentas
             </div>
             {quickActions.map((act, idx) => {
@@ -193,12 +181,12 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                 <button
                   key={idx}
                   onClick={() => handleAction(act.action)}
-                  className="w-full px-3 py-2 text-left rounded-xl hover:bg-[#f2f9f4] dark:hover:bg-[#163122] flex items-center gap-2.5 group transition-colors"
+                  className="w-full px-3 py-2 text-left rounded-xl hover:bg-[#FAFBF9] flex items-center gap-2.5 group transition-colors"
                 >
-                  <div className={`p-2 rounded-xl bg-[#edf7f1] dark:bg-[#163122] border border-[#d0e5d6] dark:border-[#21432f] ${act.color}`}>
+                  <div className={`p-1.5 rounded-lg border border-stone-200/60 ${act.color}`}>
                     <Icon className="w-4 h-4" />
                   </div>
-                  <span className="font-semibold text-[#143e26] dark:text-[#e4f6ec] group-hover:text-[#287b4a] dark:group-hover:text-[#8ee2ae]">
+                  <span className="font-medium text-stone-800 group-hover:text-emerald-800">
                     {act.label}
                   </span>
                 </button>
@@ -208,8 +196,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-3 bg-[#f4faf6] dark:bg-[#122419] border-t border-[#d8eadc] dark:border-[#1d3827] flex items-center justify-between text-[11px] text-[#527d63] dark:text-[#8eb89e] px-4">
-          <span>Dica: Use <strong>⌘K</strong> ou <strong>Ctrl+K</strong> em qualquer tela para abrir</span>
+        <div className="p-2.5 bg-[#FAFBF9] border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500 px-4">
+          <span>Dica: Use <strong>Ctrl + K</strong> em qualquer tela para abrir</span>
           <span>Navegue com o mouse ou teclado</span>
         </div>
       </div>

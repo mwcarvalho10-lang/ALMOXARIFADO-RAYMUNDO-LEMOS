@@ -4,20 +4,13 @@ import React, { useState, useMemo } from 'react';
 import { 
   ShoppingCart, 
   Printer, 
-  Download, 
   Sparkles, 
   Calendar, 
   DollarSign, 
-  Filter, 
-  Layers, 
   CheckSquare, 
   Square, 
   AlertTriangle, 
-  HelpCircle,
-  FileSpreadsheet,
-  Check,
-  RefreshCw,
-  Info
+  FileSpreadsheet
 } from 'lucide-react';
 import { InventoryItem, Category, CATEGORIES, SemesterPurchaseItem } from '@/types/inventory';
 import { playBeep } from '@/lib/audio';
@@ -29,7 +22,6 @@ interface SemesterPurchasePlannerProps {
 
 export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = ({
   items,
-  schoolName,
 }) => {
   const [semester, setSemester] = useState<'1' | '2'>('1');
   const [safetyMargin, setSafetyMargin] = useState<number>(1.1); // 10% safety buffer
@@ -99,34 +91,35 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
   };
 
   const handleToggleSelect = (itemId: string) => {
-    const current = selectedItemIds[itemId] !== undefined 
-      ? selectedItemIds[itemId] 
-      : (plannerItems.find((p) => p.itemId === itemId)?.suggestedQuantity ?? 0) > 0;
-
     setSelectedItemIds((prev) => ({
       ...prev,
-      [itemId]: !current,
+      [itemId]: !plannerItems.find((p) => p.itemId === itemId)?.selected,
     }));
   };
 
   const handleSelectAll = (select: boolean) => {
-    const updated: Record<string, boolean> = {};
+    const next: Record<string, boolean> = {};
     filteredPlannerItems.forEach((p) => {
-      updated[p.itemId] = select;
+      next[p.itemId] = select;
     });
-    setSelectedItemIds((prev) => ({ ...prev, ...updated }));
+    setSelectedItemIds((prev) => ({
+      ...prev,
+      ...next,
+    }));
   };
 
   const handleRunAiAnalysis = async () => {
     setIsAiLoading(true);
     setIsAiModalOpen(true);
+    setAiReport(null);
+
     try {
-      const res = await fetch('/api/ai-analysis', {
+      const res = await fetch('/api/purchases/ai-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           semester,
-          schoolName,
+          margin: safetyMargin,
           items: items.map((i) => ({
             name: i.name,
             category: i.category,
@@ -198,23 +191,32 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
   return (
     <div className="space-y-4">
       {/* Top Banner Island */}
-      <div className="bg-white dark:bg-[#1A2024] p-4.5 rounded-2xl border border-stone-200/80 dark:border-stone-800 shadow-2xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+      <div className="bg-white p-4.5 rounded-2xl border border-stone-200/80 shadow-2xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         <div>
-          <h2 className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
-            <span className="p-1.5 rounded-xl bg-[#FEF3C7] dark:bg-amber-950/60 text-[#92400E] dark:text-amber-300">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] shadow-2xs">
               <ShoppingCart className="w-4 h-4" />
             </span>
-            Planejamento Semestral de Suprimentos
-          </h2>
-          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-            Cálculo automático de compra baseado na meta pedagógica semestral e saldo atual
-          </p>
+            <div>
+              <div className="flex items-baseline gap-2">
+                <h2 className="text-sm sm:text-base font-bold text-stone-900">
+                  Planejamento Semestral de Suprimentos
+                </h2>
+                <span className="hidden sm:inline font-cursive text-lg text-emerald-800 font-normal">
+                  ~ previsão orçamentária ~
+                </span>
+              </div>
+              <p className="text-xs text-stone-500 mt-0.5">
+                Cálculo automático de compra baseado na meta pedagógica semestral e saldo atual
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={handleRunAiAnalysis}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl text-purple-900 dark:text-purple-300 bg-[#F5F3FF] dark:bg-purple-950/60 hover:bg-[#EDE9FE] border border-[#DDD6FE] dark:border-purple-800 transition-colors shadow-2xs"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl text-purple-950 bg-[#F5F3FF] hover:bg-[#EDE9FE] border border-[#DDD6FE] transition-colors shadow-2xs"
           >
             <Sparkles className="w-3.5 h-3.5 text-purple-600" />
             Análise com IA
@@ -223,7 +225,7 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
           <button
             onClick={exportToCSV}
             disabled={selectedItems.length === 0}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 border border-stone-200/80 dark:border-stone-700 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl text-stone-700 bg-stone-50 hover:bg-stone-100 border border-stone-200 transition-colors shadow-2xs disabled:opacity-50"
           >
             <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
             Exportar CSV
@@ -241,20 +243,20 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
       </div>
 
       {/* Semester Controls & Safety Margin Island */}
-      <div className="print:hidden bg-white dark:bg-[#1A2024] p-3.5 rounded-2xl border border-stone-200/80 dark:border-stone-800 shadow-2xs flex flex-wrap items-center justify-between gap-3">
+      <div className="print:hidden bg-white p-3.5 rounded-2xl border border-stone-200/80 shadow-2xs flex flex-wrap items-center justify-between gap-3">
         {/* Semester Selection */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-stone-600 dark:text-stone-300 flex items-center gap-1">
+          <span className="text-xs font-medium text-stone-600 flex items-center gap-1">
             <Calendar className="w-3 h-3 text-stone-400" /> Semestre:
           </span>
-          <div className="inline-flex rounded-xl border border-stone-200/80 dark:border-stone-700 p-0.5 bg-stone-50 dark:bg-stone-800 text-xs">
+          <div className="inline-flex rounded-xl border border-stone-200 p-0.5 bg-stone-50 text-xs">
             <button
               onClick={() => {
                 playBeep('click');
                 setSemester('1');
               }}
-              className={`px-3 py-1 rounded-lg font-medium transition-colors ${
-                semester === '1' ? 'bg-[#EAF4EE] text-[#1E4620] dark:bg-emerald-950 dark:text-emerald-300 shadow-2xs font-semibold' : 'text-stone-600 dark:text-stone-400'
+              className={`px-3 py-1 rounded-lg transition-colors ${
+                semester === '1' ? 'bg-[#EAF6ED] text-[#14532D] shadow-2xs font-bold border border-[#CDE5D5]' : 'text-stone-600 font-medium'
               }`}
             >
               1º Semestre (Fev - Jul)
@@ -264,8 +266,8 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
                 playBeep('click');
                 setSemester('2');
               }}
-              className={`px-3 py-1 rounded-lg font-medium transition-colors ${
-                semester === '2' ? 'bg-[#EAF4EE] text-[#1E4620] dark:bg-emerald-950 dark:text-emerald-300 shadow-2xs font-semibold' : 'text-stone-600 dark:text-stone-400'
+              className={`px-3 py-1 rounded-lg transition-colors ${
+                semester === '2' ? 'bg-[#EAF6ED] text-[#14532D] shadow-2xs font-bold border border-[#CDE5D5]' : 'text-stone-600 font-medium'
               }`}
             >
               2º Semestre (Ago - Dez)
@@ -275,11 +277,11 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
 
         {/* Safety Margin */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-stone-600 dark:text-stone-300">Margem de Reserva:</span>
+          <span className="text-xs font-medium text-stone-600">Margem de Reserva:</span>
           <select
             value={safetyMargin}
             onChange={(e) => setSafetyMargin(parseFloat(e.target.value))}
-            className="px-2.5 py-1 text-xs rounded-xl border border-stone-200/80 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 focus:outline-hidden"
+            className="px-2.5 py-1 text-xs rounded-xl border border-stone-200 bg-stone-50 text-stone-700 focus:outline-hidden font-medium"
           >
             <option value={1.0}>0% (Meta Exata de Consumo)</option>
             <option value={1.1}>+10% (Recomendado para Escolas)</option>
@@ -289,11 +291,11 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
 
         {/* Category Filter */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-stone-600 dark:text-stone-300">Seção:</span>
+          <span className="text-xs font-medium text-stone-600">Seção:</span>
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value as Category | 'todas')}
-            className="px-2.5 py-1 text-xs rounded-xl border border-stone-200/80 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 text-stone-700 dark:text-stone-300 focus:outline-hidden"
+            className="px-2.5 py-1 text-xs rounded-xl border border-stone-200 bg-stone-50 text-stone-700 focus:outline-hidden font-medium"
           >
             <option value="todas">Todas as Seções</option>
             {(Object.keys(CATEGORIES) as Category[]).map((cat) => (
@@ -305,7 +307,7 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
         </div>
 
         {/* Only Needed Checkbox */}
-        <label className="flex items-center gap-1.5 text-xs text-stone-600 dark:text-stone-300 cursor-pointer select-none">
+        <label className="flex items-center gap-1.5 text-xs text-stone-600 cursor-pointer select-none font-medium">
           <input
             type="checkbox"
             checked={onlyNeeded}
@@ -316,46 +318,46 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
         </label>
       </div>
 
-      {/* Financial Summary Cards Island (Pastel Tones) */}
+      {/* Financial Summary Cards Island (Clear Pastel Tones) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
         {/* Total Cost */}
-        <div className="bg-[#EAF4EE] dark:bg-emerald-950/30 border border-[#CFE7D8] dark:border-emerald-900/60 rounded-2xl p-4.5 shadow-2xs">
-          <div className="flex items-center justify-between text-xs text-[#1E4620] dark:text-emerald-300 font-medium">
+        <div className="bg-[#EAF6ED] border border-[#CDE5D5] rounded-2xl p-4.5 shadow-2xs">
+          <div className="flex items-center justify-between text-xs text-[#14532D] font-semibold">
             <span>Orçamento Estimado do Pedido</span>
             <DollarSign className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-bold text-[#1E4620] dark:text-emerald-200 mt-1.5 tabular-nums tracking-tight">
+          <div className="text-2xl font-bold text-[#14532D] mt-1.5 tabular-nums tracking-tight">
             {totalCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
           </div>
-          <p className="text-[11px] text-[#245D40] dark:text-emerald-400 mt-1">
+          <p className="text-[11px] text-[#1B4D35] mt-1 font-medium">
             Previsão média para o {semester}º semestre letivo
           </p>
         </div>
 
         {/* Total Items Selected */}
-        <div className="bg-white dark:bg-[#1A2024] rounded-2xl p-4.5 border border-stone-200/80 dark:border-stone-800 shadow-2xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 font-medium">
+        <div className="bg-white rounded-2xl p-4.5 border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-xs text-stone-500 font-medium">
             <span>Materiais Selecionados</span>
             <ShoppingCart className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-2xl font-bold text-stone-900 dark:text-stone-100 mt-1.5 tabular-nums tracking-tight">
+          <div className="text-2xl font-bold text-stone-900 mt-1.5 tabular-nums tracking-tight">
             {selectedItems.length}{' '}
             <span className="text-xs font-normal text-stone-500">
               de {items.length} itens totais
             </span>
           </div>
-          <p className="text-[11px] text-stone-500 mt-1 tabular-nums">
+          <p className="text-[11px] text-stone-500 mt-1 tabular-nums font-medium">
             {totalUnits} unidades físicas a adquirir
           </p>
         </div>
 
         {/* Critical Attention */}
-        <div className="bg-white dark:bg-[#1A2024] rounded-2xl p-4.5 border border-stone-200/80 dark:border-stone-800 shadow-2xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 font-medium">
+        <div className="bg-white rounded-2xl p-4.5 border border-stone-200/80 shadow-2xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-xs text-stone-500 font-medium">
             <span>Urgência Crítica no Semestre</span>
             <AlertTriangle className="w-4 h-4 text-[#991B1B]" />
           </div>
-          <div className="text-2xl font-bold text-[#991B1B] dark:text-rose-300 mt-1.5 tabular-nums tracking-tight">
+          <div className="text-2xl font-bold text-[#991B1B] mt-1.5 tabular-nums tracking-tight">
             {selectedItems.filter((i) => i.priority === 'critica').length}{' '}
             <span className="text-xs font-normal text-stone-500">itens críticos</span>
           </div>
@@ -366,19 +368,19 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
       </div>
 
       {/* Main Purchasing Table Island */}
-      <div className="bg-white dark:bg-[#1A2024] rounded-2xl border border-stone-200/80 dark:border-stone-800 shadow-2xs overflow-hidden">
-        <div className="print:hidden px-4 py-2.5 bg-[#FAFBF9] dark:bg-[#151A1D] border-b border-stone-200/80 dark:border-stone-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs overflow-hidden">
+        <div className="print:hidden px-4 py-2.5 bg-[#FAFBF9] border-b border-stone-200/80 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleSelectAll(true)}
-              className="text-xs font-medium text-emerald-800 dark:text-emerald-300 hover:text-emerald-950 flex items-center gap-1"
+              className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1"
             >
               <CheckSquare className="w-3.5 h-3.5" /> Selecionar Todos
             </button>
             <span className="text-stone-300">|</span>
             <button
               onClick={() => handleSelectAll(false)}
-              className="text-xs font-medium text-stone-500 hover:text-stone-800 flex items-center gap-1"
+              className="text-xs font-semibold text-stone-600 hover:text-stone-800 flex items-center gap-1"
             >
               <Square className="w-3.5 h-3.5" /> Desmarcar Todos
             </button>
@@ -391,7 +393,7 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#FAFBF9] dark:bg-[#151A1D] border-b border-stone-200/80 dark:border-stone-800 text-stone-500 dark:text-stone-400 font-semibold select-none">
+            <thead className="bg-[#FAFBF9] border-b border-stone-200/80 text-stone-600 font-semibold select-none">
               <tr>
                 <th className="py-2.5 px-3 w-10 text-center print:hidden">Sel.</th>
                 <th className="py-2.5 px-3 w-24">Código</th>
@@ -399,13 +401,13 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
                 <th className="py-2.5 px-3 text-center hidden md:table-cell">Seção</th>
                 <th className="py-2.5 px-3 text-right">Estoque</th>
                 <th className="py-2.5 px-3 text-right">Meta Sem.</th>
-                <th className="py-2.5 px-3 text-right font-bold text-emerald-800 dark:text-emerald-300">Sugerido</th>
+                <th className="py-2.5 px-3 text-right font-bold text-emerald-800">Sugerido</th>
                 <th className="py-2.5 px-4 text-right font-bold w-32">Comprar (Qtd)</th>
                 <th className="py-2.5 px-3 text-right hidden sm:table-cell">Custo Unit.</th>
                 <th className="py-2.5 px-4 text-right">Subtotal</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100 dark:divide-stone-800/80">
+            <tbody className="divide-y divide-stone-100">
               {filteredPlannerItems.map((item) => {
                 const isSelected = item.selected;
 
@@ -413,7 +415,7 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
                   <tr
                     key={item.itemId}
                     className={`transition-colors ${
-                      isSelected ? 'bg-white dark:bg-[#1A2024] hover:bg-stone-50/50' : 'bg-stone-50/30 opacity-60'
+                      isSelected ? 'bg-white hover:bg-[#FAFBF9]' : 'bg-stone-50/40 opacity-60'
                     }`}
                   >
                     {/* Checkbox */}
@@ -427,18 +429,18 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
                     </td>
 
                     {/* Code */}
-                    <td className="py-2.5 px-3 font-mono font-medium text-stone-500 whitespace-nowrap text-[11px]">
+                    <td className="py-2.5 px-3 font-mono font-semibold text-stone-600 whitespace-nowrap text-[11px]">
                       {item.code}
                     </td>
 
                     {/* Name */}
                     <td className="py-2.5 px-4">
-                      <div className="font-semibold text-stone-900 dark:text-stone-100">
+                      <div className="font-semibold text-stone-900">
                         {item.name}
                       </div>
                       <div className="flex items-center gap-2 mt-0.5 text-[10px] text-stone-500">
                         {item.priority === 'critica' && (
-                          <span className="font-semibold text-[#991B1B] bg-[#FEE2E2] px-1.5 py-0.2 rounded">
+                          <span className="font-semibold text-[#991B1B] bg-[#FEE2E2] px-1.5 py-0.2 rounded border border-[#FECACA]">
                             Urgente
                           </span>
                         )}
@@ -450,26 +452,26 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
 
                     {/* Category */}
                     <td className="py-2.5 px-3 text-center hidden md:table-cell whitespace-nowrap">
-                      <span className="text-[11px] text-stone-600 dark:text-stone-400">
+                      <span className="text-[11px] text-stone-600 font-medium">
                         {CATEGORIES[item.category]?.shortLabel}
                       </span>
                     </td>
 
                     {/* Current Stock */}
                     <td className="py-2.5 px-3 text-right whitespace-nowrap tabular-nums">
-                      <span className={item.currentStock <= 0 ? 'text-[#991B1B] font-bold' : 'text-stone-700 dark:text-stone-300'}>
+                      <span className={item.currentStock <= 0 ? 'text-[#991B1B] font-bold' : 'text-stone-700 font-medium'}>
                         {item.currentStock}
                       </span>{' '}
                       <span className="text-[10px] text-stone-400">{item.unit}</span>
                     </td>
 
                     {/* Target Semester */}
-                    <td className="py-2.5 px-3 text-right whitespace-nowrap tabular-nums text-stone-600 dark:text-stone-400">
+                    <td className="py-2.5 px-3 text-right whitespace-nowrap tabular-nums text-stone-600">
                       {item.targetSemesterStock} {item.unit}
                     </td>
 
                     {/* Suggested */}
-                    <td className="py-2.5 px-3 text-right whitespace-nowrap font-bold text-emerald-800 dark:text-emerald-300 tabular-nums">
+                    <td className="py-2.5 px-3 text-right whitespace-nowrap font-bold text-emerald-800 tabular-nums">
                       {item.suggestedQuantity} {item.unit}
                     </td>
 
@@ -480,17 +482,17 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
                         min="0"
                         value={item.orderedQuantity}
                         onChange={(e) => handleQuantityChange(item.itemId, parseInt(e.target.value) || 0)}
-                        className="w-20 px-2 py-1 text-right text-xs rounded-lg border border-stone-200 dark:border-stone-700 bg-[#F9F9F8] dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-bold focus:outline-hidden focus:ring-1 focus:ring-emerald-500 tabular-nums"
+                        className="w-20 px-2 py-1 text-right text-xs rounded-lg border border-stone-200 bg-[#FAFBF9] text-stone-900 font-bold focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-emerald-500 tabular-nums"
                       />
                     </td>
 
                     {/* Estimated Unit Cost */}
-                    <td className="py-2.5 px-3 text-right hidden sm:table-cell whitespace-nowrap text-stone-500 tabular-nums">
+                    <td className="py-2.5 px-3 text-right hidden sm:table-cell whitespace-nowrap text-stone-600 font-medium tabular-nums">
                       {item.estimatedUnitCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </td>
 
                     {/* Subtotal */}
-                    <td className="py-2.5 px-4 text-right whitespace-nowrap font-bold text-stone-900 dark:text-stone-100 tabular-nums">
+                    <td className="py-2.5 px-4 text-right whitespace-nowrap font-bold text-stone-900 tabular-nums">
                       {item.estimatedTotalCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </td>
                   </tr>
@@ -503,14 +505,14 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
 
       {/* AI Analysis Modal */}
       {isAiModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#1A2024] rounded-3xl border border-stone-200 dark:border-stone-800 max-w-xl w-full p-6 shadow-xl animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/30 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl border border-stone-200 max-w-xl w-full p-6 shadow-xl animate-in zoom-in-95">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-xl bg-[#F5F3FF] text-purple-700">
                   <Sparkles className="w-4 h-4" />
                 </div>
-                <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">
+                <h3 className="text-base font-bold text-stone-900">
                   Planejamento Estratégico com IA
                 </h3>
               </div>
@@ -530,15 +532,15 @@ export const SemesterPurchasePlanner: React.FC<SemesterPurchasePlannerProps> = (
                 </p>
               </div>
             ) : (
-              <div className="text-xs text-stone-700 dark:text-stone-300 max-h-80 overflow-y-auto space-y-2 whitespace-pre-wrap leading-relaxed">
+              <div className="text-xs text-stone-700 max-h-80 overflow-y-auto space-y-2 whitespace-pre-wrap leading-relaxed font-sans">
                 {aiReport}
               </div>
             )}
 
-            <div className="mt-4 pt-3 border-t border-stone-100 dark:border-stone-800 flex justify-end">
+            <div className="mt-4 pt-3 border-t border-stone-100 flex justify-end">
               <button
                 onClick={() => setIsAiModalOpen(false)}
-                className="px-4 py-1.5 bg-[#2D6A4F] text-white rounded-xl text-xs font-semibold"
+                className="px-4 py-1.5 bg-[#2D6A4F] text-white hover:bg-[#23563F] rounded-xl text-xs font-semibold shadow-2xs"
               >
                 Fechar
               </button>

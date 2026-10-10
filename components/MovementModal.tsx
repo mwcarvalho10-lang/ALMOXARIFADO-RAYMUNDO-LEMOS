@@ -41,6 +41,7 @@ export const MovementModal: React.FC<MovementModalProps> = ({
   const [responsible, setResponsible] = useState<string>('');
   const [role, setRole] = useState<string>('Professor(a)');
   const [destinationOrReason, setDestinationOrReason] = useState<string>('');
+  const [classroom, setClassroom] = useState<string>('');
   const [invoiceNumber, setInvoiceNumber] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [signatureData, setSignatureData] = useState<string>('');
@@ -100,6 +101,7 @@ export const MovementModal: React.FC<MovementModalProps> = ({
       responsible: responsible.trim(),
       role,
       destinationOrReason: destinationOrReason.trim(),
+      classroom: classroom.trim() || undefined,
       invoiceNumber: invoiceNumber.trim() || undefined,
       notes: notes.trim() || undefined,
       signatureDataUrl: signatureData || undefined,
@@ -285,23 +287,38 @@ export const MovementModal: React.FC<MovementModalProps> = ({
             </div>
           </div>
 
-          {/* Destination / Reason */}
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-              <School className="w-3.5 h-3.5 text-slate-400" />
-              {type === 'entrada' ? 'Origem / Motivo da Entrada *' : 'Turma, Sala ou Finalidade do Uso *'}
-            </label>
-            <input
-              type="text"
-              value={destinationOrReason}
-              onChange={(e) => setDestinationOrReason(e.target.value)}
-              placeholder={
-                type === 'entrada'
-                  ? 'Ex: Reposição Semestral - Distribuidora Papel & Arte'
-                  : 'Ex: Turma 5º Ano B - Projeto de Artes Visuais / Sala dos Professores'
-              }
-              className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-hidden"
-            />
+          {/* Destination / Reason & Classroom */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-bold text-slate-700 dark:text-stone-300 mb-1 flex items-center gap-1">
+                <School className="w-3.5 h-3.5 text-slate-400" />
+                {type === 'entrada' ? 'Origem / Motivo da Entrada *' : 'Finalidade Pedagógica / Atividade *'}
+              </label>
+              <input
+                type="text"
+                value={destinationOrReason}
+                onChange={(e) => setDestinationOrReason(e.target.value)}
+                placeholder={
+                  type === 'entrada'
+                    ? 'Ex: Reposição Semestral - Distribuidora Papel & Arte'
+                    : 'Ex: Projeto de Artes / Feira Cultural / Aulas Regulares'
+                }
+                className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg border border-slate-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-hidden"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-stone-300 mb-1">
+                Turma / Sala
+              </label>
+              <input
+                type="text"
+                value={classroom}
+                onChange={(e) => setClassroom(e.target.value)}
+                placeholder="Ex: 5º Ano B / Lab"
+                className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg border border-slate-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-hidden"
+              />
+            </div>
           </div>
 
           {/* Optional Invoice or Notes */}

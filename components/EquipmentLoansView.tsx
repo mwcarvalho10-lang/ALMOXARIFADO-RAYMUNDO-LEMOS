@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Clock, Plus, CheckCircle2, AlertTriangle, User, Calendar, Tag, Search, ShieldCheck } from 'lucide-react';
+import { Clock, Plus, CheckCircle2, AlertTriangle, Search } from 'lucide-react';
 import { EquipmentLoan, InventoryItem } from '@/types/inventory';
 import { playBeep } from '@/lib/audio';
 
@@ -73,17 +73,22 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
   return (
     <div className="space-y-4">
       {/* Header Banner Island */}
-      <div className="bg-white dark:bg-[#1A2024] p-4.5 rounded-2xl border border-stone-200/80 dark:border-stone-800 shadow-2xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+      <div className="bg-white p-4.5 rounded-2xl border border-stone-200/80 shadow-2xs flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-xl bg-[#EAF4EE] dark:bg-emerald-950/60 text-[#245D40] dark:text-emerald-300">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-[#EAF6ED] text-[#14532D] border border-[#CDE5D5] shadow-2xs">
               <Clock className="w-4 h-4" />
             </span>
             <div>
-              <h2 className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100">
-                Empréstimos de Equipamentos & Multimídia
-              </h2>
-              <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+              <div className="flex items-baseline gap-2">
+                <h2 className="text-sm sm:text-base font-bold text-stone-900">
+                  Empréstimos de Equipamentos & Multimídia
+                </h2>
+                <span className="hidden sm:inline font-cursive text-lg text-emerald-800 font-normal">
+                  ~ controle de patrimônio ~
+                </span>
+              </div>
+              <p className="text-xs text-stone-500 mt-0.5">
                 Rastreamento pontual de projetores, caixas de som e notebooks para aulas
               </p>
             </div>
@@ -104,33 +109,33 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
         </div>
       </div>
 
-      {/* KPI Cards (Pastel Tone) */}
+      {/* KPI Cards (Clear Pastel Tone) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-        <div className="p-4 bg-[#F0F9FF] dark:bg-sky-950/30 border border-[#BAE6FD] dark:border-sky-900/60 rounded-2xl">
-          <span className="text-xs font-medium text-sky-800 dark:text-sky-300">Empréstimos Ativos</span>
-          <div className="text-2xl font-bold text-sky-900 dark:text-sky-100 mt-1 tabular-nums">
+        <div className="p-4 bg-[#F0F9FF] border border-[#BAE6FD] rounded-2xl shadow-2xs">
+          <span className="text-xs font-semibold text-sky-800">Empréstimos Ativos</span>
+          <div className="text-2xl font-bold text-sky-950 mt-1 tabular-nums">
             {loans.filter(l => l.status === 'ativo').length}
           </div>
         </div>
 
-        <div className="p-4 bg-[#FFF5F5] dark:bg-rose-950/30 border border-[#FED7D7] dark:border-rose-900/60 rounded-2xl">
-          <span className="text-xs font-medium text-[#991B1B] dark:text-rose-300">Devoluções Atrasadas</span>
-          <div className="text-2xl font-bold text-[#991B1B] dark:text-rose-100 mt-1 tabular-nums">
+        <div className="p-4 bg-[#FFF5F5] border border-[#FED7D7] rounded-2xl shadow-2xs">
+          <span className="text-xs font-semibold text-[#991B1B]">Devoluções Atrasadas</span>
+          <div className="text-2xl font-bold text-[#991B1B] mt-1 tabular-nums">
             {loans.filter(l => l.status === 'atrasado').length}
           </div>
         </div>
 
-        <div className="p-4 bg-[#EAF4EE] dark:bg-emerald-950/30 border border-[#CFE7D8] dark:border-emerald-900/60 rounded-2xl">
-          <span className="text-xs font-medium text-[#1E4620] dark:text-emerald-300">Equipamentos Devolvidos</span>
-          <div className="text-2xl font-bold text-[#1E4620] dark:text-emerald-100 mt-1 tabular-nums">
+        <div className="p-4 bg-[#EAF6ED] border border-[#CDE5D5] rounded-2xl shadow-2xs">
+          <span className="text-xs font-semibold text-[#14532D]">Equipamentos Devolvidos</span>
+          <div className="text-2xl font-bold text-[#14532D] mt-1 tabular-nums">
             {loans.filter(l => l.status === 'devolvido').length}
           </div>
         </div>
       </div>
 
       {/* Loans Table Island */}
-      <div className="bg-white dark:bg-[#1A2024] rounded-2xl border border-stone-200/80 dark:border-stone-800 shadow-2xs overflow-hidden">
-        <div className="p-3.5 border-b border-stone-100 dark:border-stone-800 flex items-center justify-between gap-3">
+      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-2xs overflow-hidden">
+        <div className="p-3.5 border-b border-stone-100 flex items-center justify-between gap-3">
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
@@ -138,14 +143,14 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
               placeholder="Buscar por professor, turma ou equipamento..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-stone-200/80 dark:border-stone-700 bg-[#F9F9F8] dark:bg-stone-800/60 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-stone-200 bg-[#FAFBF9] text-stone-900 placeholder:text-stone-400 focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#FAFBF9] dark:bg-[#151A1D] border-b border-stone-200/80 dark:border-stone-800 text-stone-500 dark:text-stone-400 font-semibold select-none">
+            <thead className="bg-[#FAFBF9] border-b border-stone-200/80 text-stone-600 font-semibold select-none">
               <tr>
                 <th className="py-2.5 px-4">Equipamento</th>
                 <th className="py-2.5 px-3">Professor / Solicitante</th>
@@ -155,7 +160,7 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
                 <th className="py-2.5 px-4 text-center">Ação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100 dark:divide-stone-800/80">
+            <tbody className="divide-y divide-stone-100">
               {filteredLoans.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-stone-400">
@@ -168,15 +173,15 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
                   const isReturned = loan.status === 'devolvido';
 
                   return (
-                    <tr key={loan.id} className="hover:bg-stone-50/50 dark:hover:bg-stone-800/30 transition-colors">
+                    <tr key={loan.id} className="hover:bg-[#FAFBF9] transition-colors">
                       <td className="py-3 px-4">
-                        <div className="font-semibold text-stone-900 dark:text-stone-100">
+                        <div className="font-semibold text-stone-900">
                           {loan.itemName}
                         </div>
                         <div className="text-[10px] text-stone-500 flex items-center gap-2 mt-0.5 font-mono">
                           <span>{loan.itemCode}</span>
                           {loan.patrimonyNumber && (
-                            <span className="bg-[#E0F2FE] dark:bg-sky-950 text-sky-800 dark:text-sky-300 px-1.5 rounded">
+                            <span className="bg-[#E0F2FE] text-sky-800 px-1.5 rounded font-semibold border border-[#BAE6FD]">
                               Tombamento: {loan.patrimonyNumber}
                             </span>
                           )}
@@ -184,27 +189,27 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
                       </td>
 
                       <td className="py-3 px-3">
-                        <div className="font-medium text-stone-800 dark:text-stone-200">
+                        <div className="font-semibold text-stone-800">
                           {loan.borrowerName}
                         </div>
-                        <div className="text-[10px] text-stone-400">
+                        <div className="text-[10px] text-stone-500">
                           {loan.borrowerRole} · {loan.purpose}
                         </div>
                       </td>
 
-                      <td className="py-3 px-3 text-stone-500 tabular-nums">
+                      <td className="py-3 px-3 text-stone-600 tabular-nums">
                         {new Date(loan.borrowDate).toLocaleDateString('pt-BR')}
                       </td>
 
                       <td className="py-3 px-3 tabular-nums">
-                        <span className={`font-medium ${isOverdue ? 'text-[#991B1B] font-bold' : 'text-stone-700 dark:text-stone-300'}`}>
+                        <span className={`font-semibold ${isOverdue ? 'text-[#991B1B] font-bold' : 'text-stone-700'}`}>
                           {new Date(loan.dueDate).toLocaleDateString('pt-BR')}
                         </span>
                       </td>
 
                       <td className="py-3 px-3 text-center whitespace-nowrap">
                         {isReturned ? (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[#EAF4EE] text-[#1E4620] border border-[#CFE7D8]">
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[#EAF6ED] text-[#14532D] border border-[#CDE5D5]">
                             <CheckCircle2 className="w-3 h-3" /> Devolvido
                           </span>
                         ) : isOverdue ? (
@@ -225,7 +230,7 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
                               playBeep('success');
                               onReturnLoan(loan.id);
                             }}
-                            className="px-2.5 py-1 text-xs font-semibold rounded-lg text-[#1E4620] bg-[#EAF4EE] hover:bg-[#DCEEE2] border border-[#CFE7D8] transition-colors"
+                            className="px-2.5 py-1 text-xs font-semibold rounded-lg text-[#065F46] bg-[#ECFDF5] hover:bg-[#D1FAE5] border border-[#A7F3D0] transition-colors shadow-2xs"
                           >
                             Dar Baixa / Devolver
                           </button>
@@ -242,9 +247,9 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
 
       {/* New Loan Modal (Island Style) */}
       {isNewModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#1A2024] rounded-3xl border border-stone-200 dark:border-stone-800 max-w-md w-full p-6 shadow-xl animate-in zoom-in-95">
-            <h3 className="text-base font-bold text-stone-900 dark:text-stone-100 mb-1">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/30 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl border border-stone-200 max-w-md w-full p-6 shadow-xl animate-in zoom-in-95">
+            <h3 className="text-base font-bold text-stone-900 mb-1">
               Registrar Empréstimo de Equipamento
             </h3>
             <p className="text-xs text-stone-500 mb-4">
@@ -253,13 +258,13 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
 
             <form onSubmit={handleCreateLoan} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-medium text-stone-700 dark:text-stone-300 mb-1">
+                <label className="block font-medium text-stone-700 mb-1">
                   Item a ser Emprestado
                 </label>
                 <select
                   value={selectedItemId}
                   onChange={(e) => setSelectedItemId(e.target.value)}
-                  className="w-full bg-[#F9F9F8] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl p-2 text-stone-900 dark:text-stone-100"
+                  className="w-full bg-[#FAFBF9] border border-stone-200 rounded-xl p-2 text-stone-900 font-medium"
                 >
                   {capitalOrGameItems.map(it => (
                     <option key={it.id} value={it.id}>
@@ -270,7 +275,7 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-stone-700 dark:text-stone-300 mb-1">
+                <label className="block font-medium text-stone-700 mb-1">
                   Nome do Docente / Solicitante
                 </label>
                 <input
@@ -279,19 +284,19 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
                   placeholder="Ex: Profª Mariana Alves"
                   value={borrowerName}
                   onChange={(e) => setBorrowerName(e.target.value)}
-                  className="w-full bg-[#F9F9F8] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl p-2 text-stone-900 dark:text-stone-100"
+                  className="w-full bg-[#FAFBF9] border border-stone-200 rounded-xl p-2 text-stone-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block font-medium text-stone-700 dark:text-stone-300 mb-1">
+                  <label className="block font-medium text-stone-700 mb-1">
                     Cargo / Função
                   </label>
                   <select
                     value={borrowerRole}
                     onChange={(e) => setBorrowerRole(e.target.value)}
-                    className="w-full bg-[#F9F9F8] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl p-2 text-stone-900 dark:text-stone-100"
+                    className="w-full bg-[#FAFBF9] border border-stone-200 rounded-xl p-2 text-stone-900 font-medium"
                   >
                     <option value="Professor(a)">Professor(a)</option>
                     <option value="Coordenador(a)">Coordenador(a)</option>
@@ -302,7 +307,7 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-medium text-stone-700 dark:text-stone-300 mb-1">
+                  <label className="block font-medium text-stone-700 mb-1">
                     Data Limite de Devolução
                   </label>
                   <input
@@ -310,13 +315,14 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
                     required
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full bg-[#F9F9F8] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl p-2 text-stone-900 dark:text-stone-100"
-                  />
+                    className="w-full bg-[#FAFBF9] border border-stone-200 rounded-xl p-2 text-stone-900 font-medium"
+                  >
+                  </input>
                 </div>
               </div>
 
               <div>
-                <label className="block font-medium text-stone-700 dark:text-stone-300 mb-1">
+                <label className="block font-medium text-stone-700 mb-1">
                   Finalidade Pedagógica / Turma
                 </label>
                 <input
@@ -325,21 +331,21 @@ export const EquipmentLoansView: React.FC<EquipmentLoansViewProps> = ({
                   placeholder="Ex: Exibição de documentário - 8º Ano B"
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
-                  className="w-full bg-[#F9F9F8] dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl p-2 text-stone-900 dark:text-stone-100"
+                  className="w-full bg-[#FAFBF9] border border-stone-200 rounded-xl p-2 text-stone-900"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-stone-100 dark:border-stone-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-stone-100">
                 <button
                   type="button"
                   onClick={() => setIsNewModalOpen(false)}
-                  className="px-3 py-1.5 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50"
+                  className="px-3 py-1.5 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 font-medium"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded-xl bg-[#2D6A4F] text-white hover:bg-[#23563F] font-semibold"
+                  className="px-4 py-1.5 rounded-xl bg-[#2D6A4F] text-white hover:bg-[#23563F] font-semibold shadow-2xs"
                 >
                   Confirmar Empréstimo
                 </button>

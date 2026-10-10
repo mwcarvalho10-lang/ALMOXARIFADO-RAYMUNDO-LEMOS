@@ -107,6 +107,11 @@ export const ItemModal: React.FC<ItemModalProps> = ({
       condition: formData.condition as ItemCondition,
       estimatedUnitCost: Number(formData.estimatedUnitCost) || 0,
       notes: formData.notes?.trim(),
+      gradeCycle: formData.gradeCycle || 'todos',
+      fundingSource: formData.fundingSource,
+      expirationDate: formData.expirationDate,
+      isToxicFree: formData.isToxicFree ?? false,
+      isFavorite: formData.isFavorite ?? false,
       createdAt: itemToEdit ? itemToEdit.createdAt : now,
       updatedAt: now,
     };
@@ -116,19 +121,24 @@ export const ItemModal: React.FC<ItemModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white dark:bg-[#1A2024] rounded-3xl shadow-xl border border-stone-200/80 dark:border-stone-800 w-full max-w-2xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/30 backdrop-blur-xs overflow-y-auto">
+      <div className="bg-white rounded-3xl shadow-xl border border-stone-200/80 w-full max-w-2xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="px-6 py-4 bg-[#FAFBF9] dark:bg-[#151A1D] border-b border-stone-200/80 dark:border-stone-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-[#FAFBF9] border-b border-stone-200/80 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-[#EAF4EE] dark:bg-emerald-950/60 text-[#245D40] dark:text-emerald-300 rounded-xl">
+            <div className="p-2 bg-[#EAF6ED] text-[#14532D] border border-[#CDE5D5] rounded-xl shadow-2xs">
               <Package className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">
-                {itemToEdit ? 'Editar Material Escolar' : 'Cadastrar Novo Material Escolar'}
-              </h3>
-              <p className="text-xs text-stone-500 dark:text-stone-400">
+              <div className="flex items-baseline gap-2">
+                <h3 className="text-base font-bold text-stone-900">
+                  {itemToEdit ? 'Editar Material Escolar' : 'Cadastrar Novo Material Escolar'}
+                </h3>
+                <span className="hidden sm:inline font-cursive text-lg text-emerald-800 font-normal">
+                  ~ depósito escolar ~
+                </span>
+              </div>
+              <p className="text-xs text-stone-500">
                 Almoxarifado & Suprimentos da Escola
               </p>
             </div>
@@ -338,11 +348,74 @@ export const ItemModal: React.FC<ItemModalProps> = ({
             </div>
           )}
 
+          {/* Pedagogical & School Settings Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-3 rounded-2xl bg-[#FAFBF9] border border-stone-200/80">
+            <div>
+              <label className="block text-xs font-semibold text-stone-700 mb-1">
+                Ciclo / Segmento
+              </label>
+              <select
+                value={formData.gradeCycle || 'todos'}
+                onChange={(e) => setFormData({ ...formData, gradeCycle: e.target.value as any })}
+                className="w-full px-2.5 py-1.5 text-xs rounded-xl border border-stone-200 bg-white text-stone-900"
+              >
+                <option value="todos">Todos os Ciclos</option>
+                <option value="infantil">Educação Infantil</option>
+                <option value="fundamental1">Fundamental I</option>
+                <option value="fundamental2">Fundamental II</option>
+                <option value="medio">Ensino Médio</option>
+                <option value="administrativo">Administrativo</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-700 mb-1">
+                Origem da Verba
+              </label>
+              <select
+                value={formData.fundingSource || ''}
+                onChange={(e) => setFormData({ ...formData, fundingSource: (e.target.value || undefined) as any })}
+                className="w-full px-2.5 py-1.5 text-xs rounded-xl border border-stone-200 bg-white text-stone-900"
+              >
+                <option value="">Não informado</option>
+                <option value="PDDE">PDDE Federal</option>
+                <option value="APM">Caixa Escolar / APM</option>
+                <option value="Prefeitura">Prefeitura / Estado</option>
+                <option value="Doação">Doação de Pais</option>
+                <option value="Recurso Próprio">Recurso Próprio</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-stone-700 mb-1">
+                Data de Validade
+              </label>
+              <input
+                type="date"
+                value={formData.expirationDate || ''}
+                onChange={(e) => setFormData({ ...formData, expirationDate: e.target.value || undefined })}
+                className="w-full px-2.5 py-1.5 text-xs rounded-xl border border-stone-200 bg-white text-stone-900"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-4">
+              <label className="flex items-center gap-2 text-xs font-medium text-stone-700 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.isToxicFree ?? false}
+                  onChange={(e) => setFormData({ ...formData, isToxicFree: e.target.checked })}
+                  className="rounded text-emerald-600 focus:ring-emerald-500"
+                />
+                <span>Material Atóxico</span>
+              </label>
+            </div>
+          </div>
+
           {/* Unit Cost & Notes */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                <DollarSign className="w-3.5 h-3.5 text-slate-400" />
+              <label className="block text-xs font-bold text-stone-700 mb-1 flex items-center gap-1">
+                <DollarSign className="w-3.5 h-3.5 text-stone-400" />
                 Custo Médio Unitário (R$)
               </label>
               <input
@@ -351,12 +424,12 @@ export const ItemModal: React.FC<ItemModalProps> = ({
                 min="0"
                 value={formData.estimatedUnitCost ?? 0}
                 onChange={(e) => setFormData({ ...formData, estimatedUnitCost: parseFloat(e.target.value) || 0 })}
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-hidden"
+                className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-stone-200 focus:border-emerald-500 focus:outline-hidden"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-bold text-stone-700 mb-1">
                 Observações ou Instruções Pedagógicas
               </label>
               <input
@@ -364,17 +437,17 @@ export const ItemModal: React.FC<ItemModalProps> = ({
                 value={formData.notes || ''}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="Ex: Requisitado para Educação Infantil, guardar longe de umidade..."
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-hidden"
+                className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-stone-200 focus:border-emerald-500 focus:outline-hidden"
               />
             </div>
           </div>
 
           {/* Modal Footer */}
-          <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-end gap-2.5">
+          <div className="pt-3 border-t border-stone-100 flex items-center justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs sm:text-sm font-medium text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors"
+              className="px-4 py-2 text-xs sm:text-sm font-semibold text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors"
             >
               Cancelar
             </button>

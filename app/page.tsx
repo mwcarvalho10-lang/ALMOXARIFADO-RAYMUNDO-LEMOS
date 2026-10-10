@@ -19,6 +19,10 @@ import { WarehouseMapModal } from '@/components/WarehouseMapModal';
 import { SchoolKitsModal } from '@/components/SchoolKitsModal';
 import { BlindInventoryModal } from '@/components/BlindInventoryModal';
 import { SustainabilityModal } from '@/components/SustainabilityModal';
+import { SchoolQuickRequisitionModal } from '@/components/SchoolQuickRequisitionModal';
+import { SchoolConsumptionCalculatorModal } from '@/components/SchoolConsumptionCalculatorModal';
+import { SchoolDataBackupModal } from '@/components/SchoolDataBackupModal';
+import { SchoolHelpGuideModal } from '@/components/SchoolHelpGuideModal';
 import { 
   getStoredItems, 
   saveStoredItems, 
@@ -28,15 +32,17 @@ import {
   saveStoredLoans, 
   getSchoolName, 
   setSchoolName,
-  getStoredDarkMode,
-  setStoredDarkMode,
   resetToDefaults
 } from '@/lib/storage';
 import { InventoryItem, StockMovement, EquipmentLoan, Category, MovementType } from '@/types/inventory';
-import { CheckCircle2, AlertTriangle, RotateCcw } from 'lucide-react';
+import { CheckCircle2, AlertTriangle } from 'lucide-react';
 import { playBeep } from '@/lib/audio';
 
 const emptySubscribe = () => () => {};
+
+function createMovementId(prefix = 'mov'): string {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+}
 
 export default function Home() {
   const mounted = React.useSyncExternalStore(
@@ -49,7 +55,7 @@ export default function Home() {
   const [movements, setMovements] = useState<StockMovement[]>(() => getStoredMovements());
   const [loans, setLoans] = useState<EquipmentLoan[]>(() => getStoredLoans());
   const [schoolName, setSchoolState] = useState<string>(() => getSchoolName());
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => getStoredDarkMode());
+  const [isPresentationMode, setIsPresentationMode] = useState<boolean>(false);
 
   // Island layout mobile drawer state
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -78,25 +84,66 @@ export default function Home() {
   const [isAuditOpen, setIsAuditOpen] = useState(false);
   const [isSustainabilityOpen, setIsSustainabilityOpen] = useState(false);
 
+  // Pedagogical Tools Modals
+  const [isRequisitionModalOpen, setIsRequisitionModalOpen] = useState(false);
+  const [isCalculatorModalOpen, setIsCalculatorModalOpen] = useState(false);
+  const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
+  const [isHelpGuideModalOpen, setIsHelpGuideModalOpen] = useState(false);
+
   // Toast notifications
   const [toastMessage, setToastMessage] = useState<{ title: string; description: string; type: 'success' | 'warn' } | null>(null);
 
-  // Sync dark mode class on html/body
+  // Quick action openers
+  const handleOpenMovementModal = (type: 'entrada' | 'saida', itemId?: string) => {
+    setMovementModalType(type);
+    setMovementPreselectedId(itemId || null);
+    setIsMovementModalOpen(true);
+  };
+
+  const handleOpenNewItem = () => {
+    setItemToEdit(null);
+    setIsItemModalOpen(true);
+  };
+
+  const handleOpenEditItem = (item: InventoryItem) => {
+    setItemToEdit(item);
+    setIsItemModalOpen(true);
+  };
+
+  // Ensure clean pastel light theme on document root
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      if (isDarkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      document.documentElement.classList.remove('dark');
     }
-  }, [isDarkMode]);
+  }, []);
 
-  const toggleDarkMode = () => {
-    const next = !isDarkMode;
-    setIsDarkMode(next);
-    setStoredDarkMode(next);
-  };
+  // Global Keyboard Shortcuts (N = Novo Material, E = Entrada, S = Saída, ⌘K = Busca)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLInputElement || 
+        e.target instanceof HTMLTextAreaElement || 
+        e.target instanceof HTMLSelectElement
+      ) {
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen(true);
+      } else if (e.key === 'n' || e.key === 'N') {
+        e.preventDefault();
+        handleOpenNewItem();
+      } else if (e.key === 'e' || e.key === 'E') {
+        e.preventDefault();
+        handleOpenMovementModal('entrada');
+      } else if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        handleOpenMovementModal('saida');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const showToast = (title: string, description: string, type: 'success' | 'warn' = 'success') => {
     setToastMessage({ title, description, type });
@@ -134,14 +181,48 @@ export default function Home() {
     }
   };
 
+  // Toggle favorite star
+  const handleToggleFavorite = (itemId: string) => {
+    const updated = items.map((i) => i.id === itemId ? { ...i, isFavorite: !i.isFavorite } : i);
+    setItems(updated);
+    saveStoredItems(updated);
+    playBeep('click');
+  };
+
+  // Quick inline stock adjustment
+  const handleQuickAdjust = (itemId: string, delta: number) => {
+    const targetItem = items.find((i) => i.id === itemId);
+    if (!targetItem) return;
+
+    const newQty = Math.max(0, targetItem.quantity + delta);
+    if (newQty === targetItem.quantity) return;
+
+    const type: MovementType = delta > 0 ? 'entrada' : 'saida';
+    const movement: StockMovement = {
+      id: createMovementId('mov-quick'),
+      itemId: targetItem.id,
+      itemName: targetItem.name,
+      itemCode: targetItem.code,
+      category: targetItem.category,
+      type,
+      quantity: Math.abs(delta),
+      previousQuantity: targetItem.quantity,
+      newQuantity: newQty,
+      date: new Date().toISOString(),
+      responsible: 'Almoxarife (Ajuste Rápido)',
+      role: 'Almoxarifado',
+      destinationOrReason: delta > 0 ? 'Entrada pontual de bancada' : 'Baixa pontual de bancada',
+    };
+
+    handleSaveMovement(movement, false);
+  };
+
   // Movement handler
   const handleSaveMovement = (movement: StockMovement, openPrintReceipt: boolean) => {
-    // 1. Update movement history
     const updatedMovements = [movement, ...movements];
     setMovements(updatedMovements);
     saveStoredMovements(updatedMovements);
 
-    // 2. Update item stock quantity
     const targetItem = items.find((i) => i.id === movement.itemId);
     if (targetItem) {
       const updatedItem: InventoryItem = {
@@ -154,7 +235,6 @@ export default function Home() {
       setItems(updatedItems);
       saveStoredItems(updatedItems);
 
-      // Check if low stock alert triggered
       if (movement.type === 'saida' && updatedItem.quantity <= updatedItem.minQuantity) {
         playBeep('alert');
         showToast(
@@ -171,7 +251,6 @@ export default function Home() {
       }
     }
 
-    // 3. Open printable receipt if requested
     if (openPrintReceipt) {
       setReceiptMovement(movement);
       setIsReceiptModalOpen(true);
@@ -199,6 +278,29 @@ export default function Home() {
     setItems(updatedItems);
     saveStoredItems(updatedItems);
     showToast('Kit Escolar Dispensado!', `${kitName} entregue com sucesso e saldo atualizado.`);
+  };
+
+  // Quick Teacher Requisition Dispatch
+  const handleDispatchRequisition = (newMovements: StockMovement[], teacherName: string, classroom: string) => {
+    const updatedMovements = [...newMovements, ...movements];
+    setMovements(updatedMovements);
+    saveStoredMovements(updatedMovements);
+
+    const updatedItems = items.map((it) => {
+      const matched = newMovements.find((m) => m.itemId === it.id);
+      if (matched) {
+        return {
+          ...it,
+          quantity: matched.newQuantity,
+          updatedAt: new Date().toISOString(),
+        };
+      }
+      return it;
+    });
+
+    setItems(updatedItems);
+    saveStoredItems(updatedItems);
+    showToast('Requisição Docente Dispensada!', `${newMovements.length} materiais para ${teacherName} (${classroom}).`);
   };
 
   // Loans handlers
@@ -230,7 +332,7 @@ export default function Home() {
       if (adj) {
         const diff = adj.newQuantity - it.quantity;
         auditMovements.push({
-          id: `mov-audit-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+          id: createMovementId('mov-audit'),
           itemId: it.id,
           itemName: it.name,
           itemCode: it.code,
@@ -263,21 +365,15 @@ export default function Home() {
     showToast('Inventário Atualizado!', `${adjustments.length} saldos ajustados conforme conferência física.`);
   };
 
-  // Quick action openers
-  const handleOpenMovementModal = (type: 'entrada' | 'saida', itemId?: string) => {
-    setMovementModalType(type);
-    setMovementPreselectedId(itemId || null);
-    setIsMovementModalOpen(true);
-  };
-
-  const handleOpenEditItem = (item: InventoryItem) => {
-    setItemToEdit(item);
-    setIsItemModalOpen(true);
-  };
-
-  const handleOpenNewItem = () => {
-    setItemToEdit(null);
-    setIsItemModalOpen(true);
+  // Restore data from JSON backup
+  const handleRestoreData = (newItems: InventoryItem[], newMovements: StockMovement[], newLoans: EquipmentLoan[]) => {
+    setItems(newItems);
+    setMovements(newMovements);
+    setLoans(newLoans);
+    saveStoredItems(newItems);
+    saveStoredMovements(newMovements);
+    saveStoredLoans(newLoans);
+    showToast('Backup Restaurado!', `${newItems.length} materiais carregados com sucesso.`);
   };
 
   const handleUpdateSchoolName = (newName: string) => {
@@ -298,7 +394,7 @@ export default function Home() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F9F8] dark:bg-[#121618] text-stone-600 dark:text-stone-400">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFBF9] text-stone-600">
         <div className="text-center space-y-2">
           <div className="w-8 h-8 border-3 border-[#2D6A4F] border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="text-xs font-medium">Carregando Almoxarifado Escolar...</p>
@@ -308,7 +404,7 @@ export default function Home() {
   }
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'dark bg-[#121618] text-stone-100' : 'bg-[#F7F9F8] text-stone-800'}`}>
+    <div className="min-h-screen bg-[#FAFBF9] text-stone-800">
       {/* Island Sidebar Layout Wrapper */}
       <div className="flex flex-col lg:flex-row min-h-screen p-3 sm:p-4 lg:p-5 gap-3.5 sm:gap-4 lg:gap-5 max-w-[1680px] mx-auto">
         {/* Floating Island Sidebar */}
@@ -326,9 +422,13 @@ export default function Home() {
           onOpenKits={() => setIsKitsOpen(true)}
           onOpenAudit={() => setIsAuditOpen(true)}
           onOpenSustainability={() => setIsSustainabilityOpen(true)}
+          onOpenRequisition={() => setIsRequisitionModalOpen(true)}
+          onOpenCalculator={() => setIsCalculatorModalOpen(true)}
+          onOpenBackup={() => setIsBackupModalOpen(true)}
+          onOpenHelpGuide={() => setIsHelpGuideModalOpen(true)}
           onResetDefaults={handleResetDefaults}
-          isDarkMode={isDarkMode}
-          onToggleDarkMode={toggleDarkMode}
+          isPresentationMode={isPresentationMode}
+          onTogglePresentationMode={() => setIsPresentationMode(!isPresentationMode)}
           mobileOpen={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
         />
@@ -339,10 +439,12 @@ export default function Home() {
           <IslandHeader
             currentTab={currentTab}
             schoolName={schoolName}
+            isPresentationMode={isPresentationMode}
             onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
             onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
             onOpenNewItem={handleOpenNewItem}
             onOpenMovement={(type) => handleOpenMovementModal(type)}
+            onOpenRequisition={() => setIsRequisitionModalOpen(true)}
           />
 
           {/* Dynamic Content Views */}
@@ -357,6 +459,8 @@ export default function Home() {
                 }}
                 onNavigateToTab={(tab) => setCurrentTab(tab as any)}
                 onQuickMovement={(itemId, type) => handleOpenMovementModal(type, itemId)}
+                onOpenCalculator={() => setIsCalculatorModalOpen(true)}
+                isPresentationMode={isPresentationMode}
               />
             )}
 
@@ -371,6 +475,9 @@ export default function Home() {
                 onRecordMovement={(itemId, type) => handleOpenMovementModal(type, itemId)}
                 onOpenScanner={() => setIsScannerOpen(true)}
                 onOpenLabels={() => setIsLabelsOpen(true)}
+                onToggleFavorite={handleToggleFavorite}
+                onQuickAdjust={handleQuickAdjust}
+                isPresentationMode={isPresentationMode}
               />
             )}
 
@@ -414,14 +521,21 @@ export default function Home() {
           <footer className="print:hidden bg-white dark:bg-[#1A2024] rounded-2xl border border-stone-200/80 dark:border-stone-800 p-3 sm:px-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-500 dark:text-stone-400 shadow-2xs transition-colors">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-stone-700 dark:text-stone-300">{schoolName}</span>
-              <span>· Almoxarifado Escolar & Patrimônio</span>
+              <span>· Almoxarifado & Controle Patrimonial</span>
             </div>
             <div className="flex items-center gap-3 text-stone-400">
               <button
-                onClick={() => setIsCommandPaletteOpen(true)}
+                onClick={() => setIsHelpGuideModalOpen(true)}
                 className="hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
               >
-                Atalhos (⌘K)
+                Guia Docente
+              </button>
+              <span>·</span>
+              <button
+                onClick={() => setIsBackupModalOpen(true)}
+                className="hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+              >
+                Backup & APM
               </button>
               <span>·</span>
               <button
@@ -505,8 +619,6 @@ export default function Home() {
         onOpenAudit={() => setIsAuditOpen(true)}
         onOpenPurchases={() => setCurrentTab('compras')}
         onOpenSustainability={() => setIsSustainabilityOpen(true)}
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={toggleDarkMode}
       />
 
       {/* Barcode / Camera Scanner Modal */}
@@ -558,6 +670,39 @@ export default function Home() {
         onClose={() => setIsSustainabilityOpen(false)}
         movementsCount={movements.length}
         itemsCount={items.length}
+      />
+
+      {/* 40 Melhorias: Quick Teacher Requisition Modal */}
+      <SchoolQuickRequisitionModal
+        isOpen={isRequisitionModalOpen}
+        onClose={() => setIsRequisitionModalOpen(false)}
+        items={items}
+        onDispatchRequisition={handleDispatchRequisition}
+      />
+
+      {/* 40 Melhorias: School Consumption Calculator Modal */}
+      <SchoolConsumptionCalculatorModal
+        isOpen={isCalculatorModalOpen}
+        onClose={() => setIsCalculatorModalOpen(false)}
+        items={items}
+        onNavigateToPurchases={() => setCurrentTab('compras')}
+      />
+
+      {/* 40 Melhorias: Data Backup & Accountability Modal */}
+      <SchoolDataBackupModal
+        isOpen={isBackupModalOpen}
+        onClose={() => setIsBackupModalOpen(false)}
+        items={items}
+        movements={movements}
+        loans={loans}
+        schoolName={schoolName}
+        onRestoreData={handleRestoreData}
+      />
+
+      {/* Pedagogical Help Guide Modal */}
+      <SchoolHelpGuideModal
+        isOpen={isHelpGuideModalOpen}
+        onClose={() => setIsHelpGuideModalOpen(false)}
       />
     </div>
   );

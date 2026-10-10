@@ -162,6 +162,7 @@ export function resetToDefaults(): {
     localStorage.removeItem(STORAGE_KEYS.MOVEMENTS);
     localStorage.removeItem(STORAGE_KEYS.LOANS);
     localStorage.removeItem(STORAGE_KEYS.KITS);
+    localStorage.removeItem(STORAGE_KEYS.DARK_MODE);
   }
   return {
     items: INITIAL_INVENTORY_ITEMS,

@@ -18,9 +18,9 @@ export const CATEGORIES: Record<Category, CategoryInfo> = {
     shortLabel: 'Papelaria',
     description: 'Folhas sulfites, cartolinas, canetas, tintas, EVA, lápis, colas e itens de artesanato.',
     iconName: 'FileText',
-    colorClass: 'text-amber-800 bg-[#FFF7ED] border-[#FED7AA] dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/60',
-    badgeBg: 'bg-[#FEF3C7] dark:bg-amber-950/50',
-    badgeText: 'text-amber-900 dark:text-amber-300',
+    colorClass: 'text-amber-900 bg-[#FFFBEB] border-[#FDE68A]',
+    badgeBg: 'bg-[#FEF3C7]',
+    badgeText: 'text-amber-900',
   },
   jogos: {
     id: 'jogos',
@@ -28,9 +28,9 @@ export const CATEGORIES: Record<Category, CategoryInfo> = {
     shortLabel: 'Jogos & Lúdico',
     description: 'Jogos de tabuleiro, quebra-cabeças, blocos lógicos, bolas, cordas e material esportivo.',
     iconName: 'Gamepad2',
-    colorClass: 'text-purple-800 bg-[#F5F3FF] border-[#DDD6FE] dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-900/60',
-    badgeBg: 'bg-[#EDE9FE] dark:bg-purple-950/50',
-    badgeText: 'text-purple-900 dark:text-purple-300',
+    colorClass: 'text-purple-900 bg-[#FAF5FF] border-[#E9D5FF]',
+    badgeBg: 'bg-[#F3E8FF]',
+    badgeText: 'text-purple-900',
   },
   capital: {
     id: 'capital',
@@ -38,9 +38,9 @@ export const CATEGORIES: Record<Category, CategoryInfo> = {
     shortLabel: 'Itens de Capital',
     description: 'Bens duráveis e equipamentos permanentes (projetores, caixas de som, notebooks, móveis) com tombamento.',
     iconName: 'Cpu',
-    colorClass: 'text-sky-800 bg-[#F0F9FF] border-[#BAE6FD] dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-900/60',
-    badgeBg: 'bg-[#E0F2FE] dark:bg-sky-950/50',
-    badgeText: 'text-sky-900 dark:text-sky-300',
+    colorClass: 'text-sky-900 bg-[#F0F9FF] border-[#BAE6FD]',
+    badgeBg: 'bg-[#E0F2FE]',
+    badgeText: 'text-sky-900',
   },
   limpeza: {
     id: 'limpeza',
@@ -48,9 +48,9 @@ export const CATEGORIES: Record<Category, CategoryInfo> = {
     shortLabel: 'Limpeza & Higiene',
     description: 'Desinfetantes, sabonetes, papel toalha, sacos de lixo, vassouras e produtos sanitários.',
     iconName: 'Sparkles',
-    colorClass: 'text-emerald-800 bg-[#F0FDF4] border-[#BBF7D0] dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900/60',
-    badgeBg: 'bg-[#DCFCE7] dark:bg-emerald-950/50',
-    badgeText: 'text-emerald-900 dark:text-emerald-300',
+    colorClass: 'text-emerald-900 bg-[#F0FDF4] border-[#BBF7D0]',
+    badgeBg: 'bg-[#DCFCE7]',
+    badgeText: 'text-emerald-900',
   },
   outros: {
     id: 'outros',
@@ -58,13 +58,17 @@ export const CATEGORIES: Record<Category, CategoryInfo> = {
     shortLabel: 'Outros / Geral',
     description: 'Materiais de primeiros socorros, ferramentas de manutenção, pilhas, fitas adesivas e eventos.',
     iconName: 'Package',
-    colorClass: 'text-stone-700 bg-[#F5F5F4] border-[#E7E5E4] dark:bg-stone-900/50 dark:text-stone-300 dark:border-stone-800',
-    badgeBg: 'bg-[#E7E5E4] dark:bg-stone-800',
-    badgeText: 'text-stone-800 dark:text-stone-200',
+    colorClass: 'text-stone-800 bg-[#F5F5F4] border-[#E7E5E4]',
+    badgeBg: 'bg-[#E7E5E4]',
+    badgeText: 'text-stone-800',
   },
 };
 
 export type ItemCondition = 'novo' | 'bom' | 'regular' | 'necessita_reparo';
+
+export type GradeCycle = 'todos' | 'infantil' | 'fundamental1' | 'fundamental2' | 'medio' | 'administrativo';
+
+export type FundingSource = 'PDDE' | 'APM' | 'Prefeitura' | 'Doação' | 'Recurso Próprio';
 
 export interface InventoryItem {
   id: string;
@@ -84,6 +88,13 @@ export interface InventoryItem {
   lastSupplier?: string;
   lastRestockDate?: string;
   notes?: string;
+  // Melhorias Escolares
+  gradeCycle?: GradeCycle; // Ciclo / Segmento escolar
+  fundingSource?: FundingSource; // Origem da verba (PDDE, APM, etc.)
+  expirationDate?: string; // Data de validade (tintas, colas, limpeza)
+  isToxicFree?: boolean; // Selo atóxico para educação infantil
+  isFavorite?: boolean; // Acesso rápido aos materiais mais usados
+  maintenanceStatus?: 'ok' | 'em_manutencao' | 'necessita_reparo';
   createdAt: string;
   updatedAt: string;
 }
@@ -104,6 +115,8 @@ export interface StockMovement {
   responsible: string; // Nome do solicitante / professor / funcionário
   role?: string; // Professor(a), Coordenação, Limpeza, Direção, etc.
   destinationOrReason: string; // Ex: "Turma 2º Ano B - Projeto de Artes", "Reposição NF 1042", "Refeitório"
+  classroom?: string; // Sala / Turma destino
+  discardReason?: string; // Motivo de descarte ou perda
   invoiceNumber?: string;
   notes?: string;
   signatureDataUrl?: string; // Assinatura digital touch salva

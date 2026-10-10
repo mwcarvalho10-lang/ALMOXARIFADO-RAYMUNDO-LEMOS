@@ -10,8 +10,6 @@ import {
   School, 
   Edit2, 
   Check, 
-  Moon, 
-  Sun, 
   Search, 
   Camera, 
   Tag, 
@@ -20,9 +18,14 @@ import {
   ClipboardCheck, 
   Leaf, 
   RotateCcw,
-  BookOpen,
   Clock,
-  X
+  X,
+  GraduationCap,
+  Calculator,
+  Database,
+  HelpCircle,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { InventoryItem, EquipmentLoan } from '@/types/inventory';
 import { playBeep } from '@/lib/audio';
@@ -41,9 +44,13 @@ interface IslandSidebarProps {
   onOpenKits: () => void;
   onOpenAudit: () => void;
   onOpenSustainability: () => void;
+  onOpenRequisition: () => void;
+  onOpenCalculator: () => void;
+  onOpenBackup: () => void;
+  onOpenHelpGuide: () => void;
   onResetDefaults: () => void;
-  isDarkMode: boolean;
-  onToggleDarkMode: () => void;
+  isPresentationMode: boolean;
+  onTogglePresentationMode: () => void;
   mobileOpen: boolean;
   onCloseMobile: () => void;
 }
@@ -62,9 +69,13 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
   onOpenKits,
   onOpenAudit,
   onOpenSustainability,
+  onOpenRequisition,
+  onOpenCalculator,
+  onOpenBackup,
+  onOpenHelpGuide,
   onResetDefaults,
-  isDarkMode,
-  onToggleDarkMode,
+  isPresentationMode,
+  onTogglePresentationMode,
   mobileOpen,
   onCloseMobile,
 }) => {
@@ -99,7 +110,7 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
     {
       id: 'movimentacoes',
       label: 'Entradas & Saídas',
-      sublabel: 'Histórico & comprovantes',
+      sublabel: 'Histórico & turmas',
       icon: ArrowLeftRight,
       badge: null,
     },
@@ -109,7 +120,7 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
       sublabel: 'Multimídia & aulas',
       icon: Clock,
       badge: overdueLoans > 0 ? `${overdueLoans} atrasado` : null,
-      badgeColor: 'bg-[#FEE2E2] text-[#991B1B] dark:bg-rose-950 dark:text-rose-300',
+      badgeColor: 'bg-[#FEE2E2] text-[#991B1B] border border-[#FECACA]',
     },
     {
       id: 'alertas',
@@ -117,7 +128,7 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
       sublabel: 'Estoque mínimo & risco',
       icon: AlertTriangle,
       badge: criticalCount > 0 ? criticalCount : null,
-      badgeColor: 'bg-[#FEF3C7] text-[#92400E] dark:bg-amber-950 dark:text-amber-300',
+      badgeColor: 'bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]',
     },
     {
       id: 'compras',
@@ -134,28 +145,28 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
       {mobileOpen && (
         <div
           onClick={onCloseMobile}
-          className="fixed inset-0 bg-stone-900/30 backdrop-blur-xs z-40 lg:hidden transition-opacity"
+          className="fixed inset-0 bg-stone-900/20 backdrop-blur-xs z-40 lg:hidden transition-opacity"
         />
       )}
 
       {/* Island Sidebar Container */}
       <aside
-        className={`fixed lg:sticky top-0 lg:top-4 z-50 lg:z-30 h-full lg:h-[calc(100vh-2rem)] w-72 lg:w-68 xl:w-72 flex flex-col bg-white dark:bg-[#1A2024] rounded-none lg:rounded-3xl border-r lg:border border-stone-200/80 dark:border-stone-800 shadow-sm transition-transform duration-200 ease-out overflow-hidden ${
+        className={`fixed lg:sticky top-0 lg:top-4 z-50 lg:z-30 h-full lg:h-[calc(100vh-2rem)] w-72 lg:w-68 xl:w-72 flex flex-col bg-white rounded-none lg:rounded-3xl border-r lg:border border-stone-200/80 shadow-sm transition-transform duration-200 ease-out overflow-hidden ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         {/* School Branding Island Header */}
-        <div className="p-4.5 pb-3 border-b border-stone-100 dark:border-stone-800/80">
-          <div className="flex items-center justify-between mb-3">
+        <div className="p-4.5 pb-3 border-b border-stone-100 bg-[#FCFDFD]">
+          <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-[#E8F3EE] dark:bg-emerald-950/60 text-[#245D40] dark:text-emerald-300 flex items-center justify-center shadow-2xs">
+              <div className="w-9 h-9 rounded-xl bg-[#EAF6ED] text-[#1B4D35] border border-[#CDE5D5] flex items-center justify-center shadow-2xs">
                 <School className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-300 block">
+                <span className="font-cursive text-2xl text-[#14532D] font-normal leading-none block">
                   Almoxarifado
                 </span>
-                <span className="text-xs text-stone-600 dark:text-stone-300 block">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 block">
                   Gestão Escolar
                 </span>
               </div>
@@ -164,15 +175,15 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
             {/* Mobile Close Button */}
             <button
               onClick={onCloseMobile}
-              className="lg:hidden p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800"
+              className="lg:hidden p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100"
               aria-label="Fechar menu"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* School Name Card (Pastel Tint) */}
-          <div className="bg-[#F8F9FA] dark:bg-[#14191C] rounded-xl p-2.5 border border-stone-200/60 dark:border-stone-800/60">
+          {/* School Name Card (Luminous Pastel Clear Tint) */}
+          <div className="bg-[#FAFBF9] rounded-xl p-2.5 border border-stone-200/80 shadow-2xs">
             {isEditingName ? (
               <div className="flex items-center gap-1.5">
                 <input
@@ -180,12 +191,12 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
                   value={tempName}
                   onChange={(e) => setTempName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
-                  className="w-full bg-white dark:bg-stone-800 text-xs text-stone-900 dark:text-stone-100 px-2 py-1 rounded border border-stone-300 dark:border-stone-700 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  className="w-full bg-white text-xs text-stone-900 px-2 py-1 rounded border border-stone-300 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
                   autoFocus
                 />
                 <button
                   onClick={handleSaveName}
-                  className="p-1 rounded bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-900 dark:text-emerald-200"
+                  className="p-1 rounded bg-emerald-100 text-emerald-800 hover:bg-emerald-200"
                   title="Salvar nome"
                 >
                   <Check className="w-3.5 h-3.5" />
@@ -194,10 +205,10 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
             ) : (
               <div className="flex items-center justify-between gap-1.5">
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-stone-800 dark:text-stone-200 truncate" title={schoolName}>
+                  <p className="font-script text-base font-semibold text-stone-900 truncate leading-snug" title={schoolName}>
                     {schoolName}
                   </p>
-                  <p className="text-[10px] text-stone-600 dark:text-stone-300">
+                  <p className="text-[10px] text-stone-600 font-medium">
                     Ano Letivo 2026 · Depósito Ativo
                   </p>
                 </div>
@@ -206,7 +217,7 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
                     setTempName(schoolName);
                     setIsEditingName(true);
                   }}
-                  className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 p-1 rounded-md transition-colors shrink-0"
+                  className="text-stone-400 hover:text-stone-700 p-1 rounded-md transition-colors shrink-0"
                   title="Editar nome da escola"
                 >
                   <Edit2 className="w-3 h-3" />
@@ -220,10 +231,13 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
         <div className="flex-1 overflow-y-auto p-3 space-y-4">
           {/* Main Navigation Tabs */}
           <div>
-            <span className="text-[10px] font-semibold text-stone-600 dark:text-stone-300 uppercase tracking-wider px-2 block mb-1">
-              Menu Principal
-            </span>
-            <nav className="space-y-0.5">
+            <div className="flex items-center justify-between px-2 mb-1.5">
+              <span className="text-[10px] font-semibold text-stone-500 uppercase tracking-wider block">
+                Menu Principal
+              </span>
+              <span className="font-cursive text-sm text-emerald-800 font-normal">rotina</span>
+            </div>
+            <nav className="space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = currentTab === item.id;
@@ -235,18 +249,18 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
                       setCurrentTab(item.id as any);
                       onCloseMobile();
                     }}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all text-left group ${
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all text-left group ${
                       isActive
-                        ? 'bg-[#EAF4EE] text-[#1D5137] dark:bg-emerald-950/70 dark:text-emerald-200 shadow-2xs font-semibold'
-                        : 'text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-200'
+                        ? 'bg-[#EAF6ED] text-[#14532D] border border-[#CDE5D5] shadow-2xs font-semibold'
+                        : 'text-stone-600 hover:bg-[#F4F7F4] hover:text-stone-900 font-medium'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <Icon
                         className={`w-4 h-4 shrink-0 transition-colors ${
                           isActive
-                            ? 'text-[#245D40] dark:text-emerald-300'
-                            : 'text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-300'
+                            ? 'text-[#1B4D35]'
+                            : 'text-stone-400 group-hover:text-stone-700'
                         }`}
                       />
                       <span className="truncate">{item.label}</span>
@@ -258,8 +272,8 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
                           item.badgeColor
                             ? item.badgeColor
                             : isActive
-                            ? 'bg-[#D2EEDA] text-[#1D5137] dark:bg-emerald-900 dark:text-emerald-200'
-                            : 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400'
+                            ? 'bg-[#D2EEDA] text-[#14532D]'
+                            : 'bg-stone-100 text-stone-600 border border-stone-200/60'
                         }`}
                       >
                         {item.badge}
@@ -271,20 +285,56 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
             </nav>
           </div>
 
+          {/* Quick Teacher Actions */}
+          <div>
+            <div className="flex items-center justify-between px-2 mb-1.5">
+              <span className="text-[10px] font-semibold text-stone-500 uppercase tracking-wider block">
+                Rotina do Professor
+              </span>
+              <span className="font-cursive text-sm text-purple-700 font-normal">pedagógico</span>
+            </div>
+            <div className="space-y-1">
+              <button
+                onClick={() => {
+                  onOpenRequisition();
+                  onCloseMobile();
+                }}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-purple-950 bg-[#F5F3FF] hover:bg-[#EDE9FE] border border-[#DDD6FE] transition-colors text-left shadow-2xs"
+              >
+                <GraduationCap className="w-3.5 h-3.5 text-purple-600 shrink-0" />
+                <span className="truncate">Requisição para Aula</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  onOpenCalculator();
+                  onCloseMobile();
+                }}
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-emerald-950 bg-[#F0FDF4] hover:bg-[#DCFCE7] border border-[#BBF7D0] transition-colors text-left shadow-2xs"
+              >
+                <Calculator className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span className="truncate">Calculadora por Aluno</span>
+              </button>
+            </div>
+          </div>
+
           {/* School Depot Utilities Section */}
           <div>
-            <span className="text-[10px] font-semibold text-stone-600 dark:text-stone-300 uppercase tracking-wider px-2 block mb-1">
-              Ferramentas Escolares
-            </span>
-            <div className="space-y-0.5">
+            <div className="flex items-center justify-between px-2 mb-1.5">
+              <span className="text-[10px] font-semibold text-stone-500 uppercase tracking-wider block">
+                Ferramentas do Depósito
+              </span>
+              <span className="font-cursive text-sm text-emerald-800 font-normal">organização</span>
+            </div>
+            <div className="space-y-1">
               <button
                 onClick={() => {
                   onOpenKits();
                   onCloseMobile();
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs text-stone-600 dark:text-stone-400 hover:bg-purple-50 hover:text-purple-900 dark:hover:bg-purple-950/40 dark:hover:text-purple-300 transition-colors text-left"
+                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-purple-900 bg-[#FAF5FF] hover:bg-[#F3E8FF] border border-[#E9D5FF] transition-colors text-left"
               >
-                <Boxes className="w-3.5 h-3.5 text-purple-500" />
+                <Boxes className="w-3.5 h-3.5 text-purple-600 shrink-0" />
                 <span className="truncate">Kits Didáticos por Turma</span>
               </button>
 
@@ -293,9 +343,9 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
                   onOpenScanner();
                   onCloseMobile();
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs text-stone-600 dark:text-stone-400 hover:bg-sky-50 hover:text-sky-900 dark:hover:bg-sky-950/40 dark:hover:text-sky-300 transition-colors text-left"
+                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-sky-900 bg-[#F0F9FF] hover:bg-[#E0F2FE] border border-[#BAE6FD] transition-colors text-left"
               >
-                <Camera className="w-3.5 h-3.5 text-sky-500" />
+                <Camera className="w-3.5 h-3.5 text-sky-600 shrink-0" />
                 <span className="truncate">Leitor de Código de Barras</span>
               </button>
 
@@ -304,9 +354,9 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
                   onOpenLabels();
                   onCloseMobile();
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs text-stone-600 dark:text-stone-400 hover:bg-amber-50 hover:text-amber-900 dark:hover:bg-amber-950/40 dark:hover:text-amber-300 transition-colors text-left"
+                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-amber-900 bg-[#FFFBEB] hover:bg-[#FEF3C7] border border-[#FDE68A] transition-colors text-left"
               >
-                <Tag className="w-3.5 h-3.5 text-amber-500" />
+                <Tag className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                 <span className="truncate">Etiquetas para Prateleira</span>
               </button>
 
@@ -315,9 +365,9 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
                   onOpenMap();
                   onCloseMobile();
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs text-stone-600 dark:text-stone-400 hover:bg-emerald-50 hover:text-emerald-900 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-300 transition-colors text-left"
+                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-emerald-900 bg-[#ECFDF5] hover:bg-[#D1FAE5] border border-[#A7F3D0] transition-colors text-left"
               >
-                <MapPin className="w-3.5 h-3.5 text-emerald-500" />
+                <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span className="truncate">Mapa do Depósito / Armários</span>
               </button>
 
@@ -326,9 +376,9 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
                   onOpenAudit();
                   onCloseMobile();
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs text-stone-600 dark:text-stone-400 hover:bg-stone-100 hover:text-stone-900 dark:hover:bg-stone-800 dark:hover:text-stone-200 transition-colors text-left"
+                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-800 bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#E2E8F0] transition-colors text-left"
               >
-                <ClipboardCheck className="w-3.5 h-3.5 text-stone-500" />
+                <ClipboardCheck className="w-3.5 h-3.5 text-slate-600 shrink-0" />
                 <span className="truncate">Conferência & Inventário Cego</span>
               </button>
 
@@ -337,57 +387,80 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
                   onOpenSustainability();
                   onCloseMobile();
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs text-stone-600 dark:text-stone-400 hover:bg-emerald-50 hover:text-emerald-900 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-300 transition-colors text-left"
+                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-emerald-900 bg-[#F0FDF4] hover:bg-[#DCFCE7] border border-[#BBF7D0] transition-colors text-left"
               >
-                <Leaf className="w-3.5 h-3.5 text-emerald-600" />
+                <Leaf className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span className="truncate">Depósito Sustentável</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  onOpenBackup();
+                  onCloseMobile();
+                }}
+                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-stone-800 bg-[#FAFAF9] hover:bg-[#F5F5F4] border border-[#E7E5E4] transition-colors text-left"
+              >
+                <Database className="w-3.5 h-3.5 text-stone-600 shrink-0" />
+                <span className="truncate">Backup & Prestação de Contas</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  onOpenHelpGuide();
+                  onCloseMobile();
+                }}
+                className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-medium text-teal-900 bg-[#F0FDFA] hover:bg-[#CCFBF1] border border-[#99F6E4] transition-colors text-left"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+                <span className="truncate">Guia Rápido do Almoxarifado</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Island Sidebar Bottom Bar */}
-        <div className="p-3 border-t border-stone-100 dark:border-stone-800/80 bg-[#FAFAFA] dark:bg-[#161B1E] space-y-2">
+        {/* Island Sidebar Bottom Bar (Luminous Clear) */}
+        <div className="p-3 border-t border-stone-100 bg-[#FCFDFD] space-y-2">
           {/* Quick search button shortcut */}
           <button
             onClick={onOpenCommandPalette}
-            className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-white dark:bg-stone-800/80 border border-stone-200/80 dark:border-stone-700/80 text-stone-600 dark:text-stone-400 hover:border-stone-300 text-xs transition-colors shadow-2xs"
+            className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-white border border-stone-200 text-stone-600 hover:border-stone-300 text-xs transition-colors shadow-2xs"
           >
             <div className="flex items-center gap-2">
               <Search className="w-3.5 h-3.5 text-stone-400" />
-              <span className="text-stone-600 dark:text-stone-300">Buscar material...</span>
+              <span className="text-stone-700">Buscar material...</span>
             </div>
-            <kbd className="text-[10px] bg-stone-100 dark:bg-stone-900 px-1.5 py-0.5 rounded text-stone-500 dark:text-stone-400 font-mono">
+            <kbd className="text-[10px] bg-stone-100 px-1.5 py-0.5 rounded text-stone-600 font-mono border border-stone-200">
               ⌘K
             </kbd>
           </button>
 
-          {/* Controls row */}
-          <div className="flex items-center justify-between pt-1">
-            <button
-              onClick={onToggleDarkMode}
-              className="flex items-center gap-1.5 text-xs text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200 px-2 py-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-              title={isDarkMode ? 'Tema Claro' : 'Tema Escuro'}
-            >
-              {isDarkMode ? (
-                <>
-                  <Sun className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Modo Claro</span>
-                </>
-              ) : (
-                <>
-                  <Moon className="w-3.5 h-3.5 text-stone-500" />
-                  <span>Modo Escuro</span>
-                </>
-              )}
-            </button>
+          {/* Presentation Mode Toggle */}
+          <button
+            onClick={onTogglePresentationMode}
+            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-[11px] transition-colors ${
+              isPresentationMode
+                ? 'bg-[#FEF3C7] text-[#92400E] font-semibold border border-[#FDE68A]'
+                : 'text-stone-600 hover:bg-stone-50 border border-transparent'
+            }`}
+            title="Oculta valores em R$ para exibição em reuniões pedagógicas"
+          >
+            <div className="flex items-center gap-1.5">
+              {isPresentationMode ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              <span>Modo Reunião Docente</span>
+            </div>
+            <span className="text-[9px] uppercase tracking-wider">{isPresentationMode ? 'Ativo' : 'Padrão'}</span>
+          </button>
 
+          {/* Reset data row */}
+          <div className="flex items-center justify-between pt-1 text-[11px] text-stone-500">
+            <span className="font-cursive text-base text-emerald-800">Depósito Escolar</span>
             <button
               onClick={onResetDefaults}
-              className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+              className="flex items-center gap-1.5 text-stone-400 hover:text-stone-700 p-1 rounded-lg hover:bg-stone-100 transition-colors"
               title="Restaurar dados padrão de teste"
             >
               <RotateCcw className="w-3.5 h-3.5" />
+              <span>Restaurar</span>
             </button>
           </div>
         </div>

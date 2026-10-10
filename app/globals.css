@@ -1,0 +1,61 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  /* Pastel Green Design Tokens */
+  --pastel-bg: #f4f8f5;
+  --pastel-bg-card: #ffffff;
+  --pastel-surface-soft: #ebf5ee;
+  --pastel-border: #d4e7d9;
+  --pastel-border-subtle: #e2efe5;
+  --pastel-primary: #388e5c;
+  --pastel-primary-hover: #2e784d;
+  --pastel-primary-soft: #dff2e5;
+  --pastel-primary-text: #1a5132;
+  --pastel-text-main: #172b20;
+  --pastel-text-muted: #536f5e;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #f4f8f5;
+  color: #172b20;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+}
+
+/* Custom Soft Pastel Green Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #edf5ef;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c2deda;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a3cdc7;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0f1d15;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #1f3d2d;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #2b543e;
+}

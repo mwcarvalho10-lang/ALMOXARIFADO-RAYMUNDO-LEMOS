@@ -55,12 +55,12 @@ export function getStoredItems(): InventoryItem[] {
   if (typeof window === 'undefined') return INITIAL_INVENTORY_ITEMS;
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.ITEMS);
-    if (!raw) {
+    if (raw === null) {
       saveStoredItems(INITIAL_INVENTORY_ITEMS);
       return INITIAL_INVENTORY_ITEMS;
     }
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
+    if (!Array.isArray(parsed)) {
       saveStoredItems(INITIAL_INVENTORY_ITEMS);
       return INITIAL_INVENTORY_ITEMS;
     }
@@ -192,3 +192,24 @@ export function resetToDefaults(): {
     kits: INITIAL_SCHOOL_KITS,
   };
 }
+
+export function clearAllData(): {
+  items: InventoryItem[];
+  movements: StockMovement[];
+  loans: EquipmentLoan[];
+  kits: SchoolKit[];
+} {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEYS.ITEMS, JSON.stringify([]));
+    localStorage.setItem(STORAGE_KEYS.MOVEMENTS, JSON.stringify([]));
+    localStorage.setItem(STORAGE_KEYS.LOANS, JSON.stringify([]));
+    localStorage.setItem(STORAGE_KEYS.KITS, JSON.stringify([]));
+  }
+  return {
+    items: [],
+    movements: [],
+    loans: [],
+    kits: [],
+  };
+}
+

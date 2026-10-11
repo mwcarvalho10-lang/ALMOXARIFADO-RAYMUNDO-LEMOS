@@ -1,13 +1,19 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { 
   X, 
   Database, 
   Download, 
   Upload, 
   FileText, 
-  Printer
+  Printer,
+  Trash2,
+  KeyRound,
+  AlertTriangle,
+  RotateCcw,
+  CheckCircle2,
+  ShieldAlert
 } from 'lucide-react';
 import { InventoryItem, StockMovement, EquipmentLoan } from '@/types/inventory';
 import { playBeep } from '@/lib/audio';
@@ -20,6 +26,8 @@ interface SchoolDataBackupModalProps {
   loans: EquipmentLoan[];
   schoolName: string;
   onRestoreData: (newItems: InventoryItem[], newMovements: StockMovement[], newLoans: EquipmentLoan[]) => void;
+  onResetDefaults?: () => void;
+  onClearAllData?: () => void;
 }
 
 export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
@@ -30,8 +38,13 @@ export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
   loans,
   schoolName,
   onRestoreData,
+  onResetDefaults,
+  onClearAllData,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showPinPrompt, setShowPinPrompt] = useState(false);
+  const [pinInput, setPinInput] = useState('');
+  const [pinError, setPinError] = useState('');
 
   if (!isOpen) return null;
 
@@ -82,6 +95,25 @@ export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
     reader.readAsText(file);
   };
 
+  const handleConfirmClearAllData = () => {
+    setPinError('');
+    if (pinInput.trim() !== '122026') {
+      playBeep('alert');
+      setPinError('PIN incorreto! Para autorizar o zeramento total da base de dados, digite o PIN 122026.');
+      return;
+    }
+
+    playBeep('success');
+    if (onClearAllData) {
+      onClearAllData();
+    } else {
+      onRestoreData([], [], []);
+    }
+    setShowPinPrompt(false);
+    setPinInput('');
+    onClose();
+  };
+
   const handlePrintAccountabilityReport = () => {
     if (typeof window !== 'undefined') {
       window.print();
@@ -100,11 +132,16 @@ export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
               <Database className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-stone-900">
-                Segurança Patrimonial & Backup
-              </h3>
+              <div className="flex items-baseline gap-2">
+                <h3 className="text-base font-bold text-stone-900">
+                  Segurança, Restauração & Backup
+                </h3>
+                <span className="hidden sm:inline font-cursive text-lg text-emerald-800 font-normal">
+                  ~ gestão de dados ~
+                </span>
+              </div>
               <p className="text-xs text-stone-500">
-                Exportação de dados e relatório para o Conselho Escolar / APM
+                Backup em arquivo, restauração e opções de zeramento do depósito
               </p>
             </div>
           </div>
@@ -158,7 +195,7 @@ export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
               <div>
                 <div className="flex items-center gap-2 font-bold text-stone-900 mb-1">
                   <Upload className="w-4 h-4 text-sky-700" />
-                  Restaurar Backup
+                  Restaurar Backup (.json)
                 </div>
                 <p className="text-[11px] text-stone-500 leading-snug">
                   Carregue um arquivo gerado anteriormente para recuperar dados em outro computador.
@@ -175,9 +212,112 @@ export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
                 onClick={() => fileInputRef.current?.click()}
                 className="w-full py-2 px-3 rounded-xl bg-[#F0F9FF] text-sky-800 hover:bg-[#E0F2FE] font-semibold text-center transition-colors"
               >
-                Selecionar Arquivo
+                Selecionar Arquivo .json
               </button>
             </div>
+          </div>
+
+          {/* Critical Section: Reset / Clear All Data with PIN 122026 */}
+          <div className="p-4 rounded-2xl bg-[#FFF5F5] border border-[#FED7D7] space-y-3">
+            <div className="flex items-start gap-2.5">
+              <div className="p-2 rounded-xl bg-white border border-[#FED7D7] text-[#991B1B] shrink-0">
+                <Trash2 className="w-4 h-4" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h4 className="font-bold text-stone-900 flex items-center gap-1.5">
+                  <span>Zerar Todos os Dados do Estoque</span>
+                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-white text-[#991B1B] border border-[#FED7D7]">
+                    PIN: 122026
+                  </span>
+                </h4>
+                <p className="text-[11px] text-stone-600 mt-0.5 leading-snug">
+                  Apaga permanentemente todos os materiais, registros de entradas/saídas e empréstimos, reiniciando o depósito totalmente zerado.
+                </p>
+              </div>
+            </div>
+
+            {!showPinPrompt ? (
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPinPrompt(true);
+                    setPinError('');
+                    setPinInput('');
+                  }}
+                  className="px-3.5 py-1.5 rounded-xl bg-[#991B1B] hover:bg-[#7F1D1D] text-white font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-2xs"
+                >
+                  <KeyRound className="w-3.5 h-3.5" />
+                  Zerar Dados (Exige PIN 122026)
+                </button>
+
+                {onResetDefaults && (
+                  <button
+                    type="button"
+                    onClick={onResetDefaults}
+                    className="px-3 py-1.5 rounded-xl bg-white hover:bg-stone-50 border border-stone-200 text-stone-700 font-medium text-xs transition-colors flex items-center gap-1"
+                  >
+                    <RotateCcw className="w-3 h-3 text-stone-400" />
+                    Restaurar Padrão Escolar
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="p-3 bg-white rounded-xl border border-[#FED7D7] space-y-2.5 animate-in fade-in">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-stone-800 flex items-center gap-1">
+                    <KeyRound className="w-3.5 h-3.5 text-[#991B1B]" />
+                    Digite o PIN de Segurança para confirmar (122026):
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPinPrompt(false);
+                      setPinError('');
+                    }}
+                    className="text-stone-400 hover:text-stone-600 text-[11px]"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    autoFocus
+                    value={pinInput}
+                    onChange={(e) => {
+                      setPinError('');
+                      setPinInput(e.target.value);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleConfirmClearAllData();
+                      }
+                    }}
+                    placeholder="Digite 122026..."
+                    className="flex-1 px-3 py-2 text-xs font-mono font-bold rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 bg-[#FAFBF9]"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={handleConfirmClearAllData}
+                    className="px-4 py-2 bg-[#991B1B] hover:bg-[#7F1D1D] text-white font-bold text-xs rounded-xl shadow-2xs transition-colors"
+                  >
+                    Confirmar Zeramento
+                  </button>
+                </div>
+
+                {pinError && (
+                  <p className="text-[11px] text-[#991B1B] font-medium flex items-center gap-1 animate-in fade-in">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                    {pinError}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Accountability Print Box */}

@@ -9,7 +9,8 @@ import {
   ArrowUpRight, 
   GraduationCap,
   ChevronRight,
-  EyeOff
+  EyeOff,
+  Lock
 } from 'lucide-react';
 import { playBeep } from '@/lib/audio';
 
@@ -22,6 +23,7 @@ interface IslandHeaderProps {
   onOpenNewItem: () => void;
   onOpenMovement: (type: 'entrada' | 'saida') => void;
   onOpenRequisition: () => void;
+  onLockSession?: () => void;
 }
 
 const TAB_TITLES: Record<IslandHeaderProps['currentTab'], { title: string; subtitle: string }> = {
@@ -60,6 +62,7 @@ export const IslandHeader: React.FC<IslandHeaderProps> = ({
   onOpenNewItem,
   onOpenMovement,
   onOpenRequisition,
+  onLockSession,
 }) => {
   const currentInfo = TAB_TITLES[currentTab];
 
@@ -111,6 +114,21 @@ export const IslandHeader: React.FC<IslandHeaderProps> = ({
           <span>Buscar</span>
           <kbd className="text-[10px] text-stone-500 font-mono ml-0.5">⌘K</kbd>
         </button>
+
+        {/* Lock Session Button */}
+        {onLockSession && (
+          <button
+            onClick={() => {
+              playBeep('click');
+              onLockSession();
+            }}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-stone-600 hover:text-stone-900 bg-white hover:bg-stone-50 rounded-xl border border-stone-200 transition-colors shadow-2xs"
+            title="Bloquear tela (Exige senha 2026)"
+          >
+            <Lock className="w-3.5 h-3.5 text-stone-500" />
+            <span className="hidden lg:inline text-[11px]">Bloquear</span>
+          </button>
+        )}
 
         {/* Quick Teacher Requisition Button */}
         <button

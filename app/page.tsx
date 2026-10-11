@@ -23,6 +23,7 @@ import { SchoolQuickRequisitionModal } from '@/components/SchoolQuickRequisition
 import { SchoolConsumptionCalculatorModal } from '@/components/SchoolConsumptionCalculatorModal';
 import { SchoolDataBackupModal } from '@/components/SchoolDataBackupModal';
 import { SchoolHelpGuideModal } from '@/components/SchoolHelpGuideModal';
+import { AuthLockScreen } from '@/components/AuthLockScreen';
 import { 
   getStoredItems, 
   saveStoredItems, 
@@ -32,7 +33,8 @@ import {
   saveStoredLoans, 
   getSchoolName, 
   setSchoolName,
-  resetToDefaults
+  resetToDefaults,
+  clearAllData
 } from '@/lib/storage';
 import { InventoryItem, StockMovement, EquipmentLoan, Category, MovementType } from '@/types/inventory';
 import { CheckCircle2, AlertTriangle } from 'lucide-react';
@@ -56,6 +58,10 @@ export default function Home() {
   const [loans, setLoans] = useState<EquipmentLoan[]>(() => getStoredLoans());
   const [schoolName, setSchoolState] = useState<string>(() => getSchoolName());
   const [isPresentationMode, setIsPresentationMode] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return sessionStorage.getItem('almoxarifado_authenticated') === 'true';
+  });
 
   // Island layout mobile drawer state
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -392,6 +398,22 @@ export default function Home() {
     }
   };
 
+  const handleClearAllData = () => {
+    const { items: emptyItems, movements: emptyMovs, loans: emptyLoans } = clearAllData();
+    setItems(emptyItems);
+    setMovements(emptyMovs);
+    setLoans(emptyLoans);
+    showToast('Base Zerada com Sucesso!', 'Todos os materiais e históricos foram zerados com o PIN 122026.');
+  };
+
+  const handleLockSession = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('almoxarifado_authenticated');
+    }
+    setIsAuthenticated(false);
+    showToast('Sessão Bloqueada', 'Digite a senha 2026 para reabrir o almoxarifado.');
+  };
+
   if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFBF9] text-stone-600">
@@ -400,6 +422,15 @@ export default function Home() {
           <p className="text-xs font-medium">Carregando Almoxarifado Escolar...</p>
         </div>
       </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <AuthLockScreen
+        schoolName={schoolName}
+        onUnlock={() => setIsAuthenticated(true)}
+      />
     );
   }
 
@@ -431,6 +462,7 @@ export default function Home() {
           onTogglePresentationMode={() => setIsPresentationMode(!isPresentationMode)}
           mobileOpen={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
+          onLockSession={handleLockSession}
         />
 
         {/* Main Content Island Column */}
@@ -445,6 +477,7 @@ export default function Home() {
             onOpenNewItem={handleOpenNewItem}
             onOpenMovement={(type) => handleOpenMovementModal(type)}
             onOpenRequisition={() => setIsRequisitionModalOpen(true)}
+            onLockSession={handleLockSession}
           />
 
           {/* Dynamic Content Views */}
@@ -697,6 +730,8 @@ export default function Home() {
         loans={loans}
         schoolName={schoolName}
         onRestoreData={handleRestoreData}
+        onClearAllData={handleClearAllData}
+        onResetDefaults={handleResetDefaults}
       />
 
       {/* Pedagogical Help Guide Modal */}

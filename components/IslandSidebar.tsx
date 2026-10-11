@@ -25,7 +25,8 @@ import {
   Database,
   HelpCircle,
   Eye,
-  EyeOff
+  EyeOff,
+  Lock
 } from 'lucide-react';
 import { InventoryItem, EquipmentLoan } from '@/types/inventory';
 import { playBeep } from '@/lib/audio';
@@ -53,6 +54,7 @@ interface IslandSidebarProps {
   onTogglePresentationMode: () => void;
   mobileOpen: boolean;
   onCloseMobile: () => void;
+  onLockSession?: () => void;
 }
 
 export const IslandSidebar: React.FC<IslandSidebarProps> = ({
@@ -78,6 +80,7 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
   onTogglePresentationMode,
   mobileOpen,
   onCloseMobile,
+  onLockSession,
 }) => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState(schoolName);
@@ -451,9 +454,24 @@ export const IslandSidebar: React.FC<IslandSidebarProps> = ({
             <span className="text-[9px] uppercase tracking-wider">{isPresentationMode ? 'Ativo' : 'Padrão'}</span>
           </button>
 
-          {/* Reset data row */}
+          {/* Reset data and lock row */}
           <div className="flex items-center justify-between pt-1 text-[11px] text-stone-500">
-            <span className="font-cursive text-base text-emerald-800">Depósito Escolar</span>
+            {onLockSession ? (
+              <button
+                onClick={() => {
+                  playBeep('click');
+                  onLockSession();
+                }}
+                className="flex items-center gap-1.5 text-stone-500 hover:text-stone-800 p-1 rounded-lg hover:bg-stone-100 transition-colors"
+                title="Bloquear sessão (Senha 2026)"
+              >
+                <Lock className="w-3.5 h-3.5 text-stone-500" />
+                <span>Bloquear</span>
+              </button>
+            ) : (
+              <span className="font-cursive text-base text-emerald-800">Depósito Escolar</span>
+            )}
+
             <button
               onClick={onResetDefaults}
               className="flex items-center gap-1.5 text-stone-400 hover:text-stone-700 p-1 rounded-lg hover:bg-stone-100 transition-colors"

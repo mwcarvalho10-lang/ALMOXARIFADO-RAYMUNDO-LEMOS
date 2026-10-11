@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Tag, Printer, X, CheckSquare, Square, Download, Filter } from 'lucide-react';
+import { Tag, Printer, X, CheckSquare, Square } from 'lucide-react';
 import { InventoryItem, Category, CATEGORIES } from '@/types/inventory';
 
 interface BarcodeLabelGeneratorProps {
@@ -60,19 +60,24 @@ export const BarcodeLabelGenerator: React.FC<BarcodeLabelGeneratorProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0c1711]/50 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white dark:bg-[#0f1d16] rounded-3xl shadow-2xl border border-[#d8eadc] dark:border-[#1d3827] w-full max-w-4xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/30 backdrop-blur-xs overflow-y-auto">
+      <div className="bg-white rounded-3xl shadow-xl border border-stone-200/80 w-full max-w-4xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header (Hidden on print) */}
-        <div className="print:hidden px-6 py-4 bg-[#eaf5ee] dark:bg-[#142d1f] border-b border-[#d2ebdc] dark:border-[#1d3827] flex items-center justify-between">
+        <div className="print:hidden px-6 py-4.5 bg-[#FAFBF9] border-b border-stone-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2.5 bg-[#348a57] text-white rounded-xl shadow-xs">
+            <div className="p-2.5 bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A] rounded-xl shadow-2xs">
               <Tag className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-base text-[#143e26] dark:text-[#e4f6ec]">
-                Gerador de Etiquetas de Almoxarifado & Patrimônio
-              </h3>
-              <p className="text-xs text-[#527d63] dark:text-[#8eb89e]">
+              <div className="flex items-baseline gap-2">
+                <h3 className="font-bold text-base text-stone-900">
+                  Gerador de Etiquetas de Almoxarifado
+                </h3>
+                <span className="hidden sm:inline font-cursive text-lg text-emerald-800 font-normal">
+                  ~ identificação escolar ~
+                </span>
+              </div>
+              <p className="text-xs text-stone-500">
                 Geração em lote para identificação de caixas, estantes e bens permanentes
               </p>
             </div>
@@ -82,14 +87,14 @@ export const BarcodeLabelGenerator: React.FC<BarcodeLabelGeneratorProps> = ({
             <button
               onClick={handlePrint}
               disabled={selectedItems.length === 0}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-bold text-white bg-[#348a57] hover:bg-[#287b4a] rounded-xl shadow-xs transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-[#2D6A4F] hover:bg-[#23563F] rounded-xl shadow-2xs transition-colors disabled:opacity-50"
             >
               <Printer className="w-4 h-4" />
               Imprimir Folha ({selectedItems.length})
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 text-[#527d63] dark:text-[#8eb89e] hover:text-[#184f2f] rounded-lg hover:bg-[#e4f3e8] dark:hover:bg-[#163122]"
+              className="p-1.5 text-stone-400 hover:text-stone-700 rounded-lg hover:bg-stone-100 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -97,13 +102,13 @@ export const BarcodeLabelGenerator: React.FC<BarcodeLabelGeneratorProps> = ({
         </div>
 
         {/* Filter bar (Hidden on print) */}
-        <div className="print:hidden p-4 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-3 text-xs bg-slate-50/50 dark:bg-slate-800/30">
+        <div className="print:hidden p-4 border-b border-stone-200 flex flex-wrap items-center justify-between gap-3 text-xs bg-[#FAFBF9]">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-600 dark:text-slate-300">Seção:</span>
+            <span className="font-semibold text-stone-700">Seção:</span>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value as Category | 'todas')}
-              className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+              className="px-2.5 py-1.5 rounded-xl border border-stone-200 bg-white text-stone-800 font-medium focus:outline-hidden"
             >
               <option value="todas">Todas as Seções</option>
               {(Object.keys(CATEGORIES) as Category[]).map((cat) => (
@@ -117,13 +122,13 @@ export const BarcodeLabelGenerator: React.FC<BarcodeLabelGeneratorProps> = ({
           <div className="flex items-center gap-3">
             <button
               onClick={() => handleSelectAll(true)}
-              className="text-blue-600 dark:text-blue-400 font-semibold hover:underline flex items-center gap-1"
+              className="text-emerald-800 font-semibold hover:underline flex items-center gap-1"
             >
               <CheckSquare className="w-3.5 h-3.5" /> Marcar Todos
             </button>
             <button
               onClick={() => handleSelectAll(false)}
-              className="text-slate-500 font-semibold hover:underline flex items-center gap-1"
+              className="text-stone-500 font-semibold hover:underline flex items-center gap-1"
             >
               <Square className="w-3.5 h-3.5" /> Desmarcar Todos
             </button>
@@ -131,9 +136,9 @@ export const BarcodeLabelGenerator: React.FC<BarcodeLabelGeneratorProps> = ({
         </div>
 
         {/* Labels Printable Canvas Area */}
-        <div className="p-6 max-h-[70vh] overflow-y-auto bg-slate-100 dark:bg-slate-950">
+        <div className="p-6 max-h-[70vh] overflow-y-auto bg-[#F8FAF9]">
           {selectedItems.length === 0 ? (
-            <div className="p-12 text-center text-slate-400">
+            <div className="p-12 text-center text-stone-400">
               Nenhuma etiqueta selecionada. Marque os materiais para gerar as etiquetas.
             </div>
           ) : (
@@ -142,14 +147,14 @@ export const BarcodeLabelGenerator: React.FC<BarcodeLabelGeneratorProps> = ({
                 <div
                   key={item.id}
                   onClick={() => toggleSelect(item.id)}
-                  className="bg-white text-slate-900 border-2 border-slate-800 rounded-lg p-3 shadow-xs flex flex-col justify-between h-36 relative cursor-pointer select-none group hover:border-blue-600 transition-colors"
+                  className="bg-white text-stone-900 border-2 border-stone-800 rounded-xl p-3 shadow-2xs flex flex-col justify-between h-36 relative cursor-pointer select-none group hover:border-emerald-600 transition-colors"
                 >
                   {/* Label Header */}
-                  <div className="flex items-center justify-between border-b border-slate-300 pb-1">
+                  <div className="flex items-center justify-between border-b border-stone-300 pb-1">
                     <span className="text-[10px] font-extrabold uppercase truncate max-w-[170px] tracking-tight">
                       {schoolName}
                     </span>
-                    <span className="text-[9px] font-mono font-bold bg-slate-100 px-1 py-0.5 rounded border border-slate-300">
+                    <span className="text-[9px] font-mono font-bold bg-stone-100 px-1 py-0.5 rounded border border-stone-300">
                       DEPÓSITO
                     </span>
                   </div>
@@ -159,10 +164,10 @@ export const BarcodeLabelGenerator: React.FC<BarcodeLabelGeneratorProps> = ({
                     <h4 className="text-xs font-black line-clamp-2 leading-tight">
                       {item.name}
                     </h4>
-                    <div className="text-[10px] text-slate-600 font-mono mt-0.5 flex items-center justify-between">
+                    <div className="text-[10px] text-stone-600 font-mono mt-0.5 flex items-center justify-between">
                       <span>CÓD: <strong>{item.code}</strong></span>
                       {item.patrimonyNumber && (
-                        <span className="bg-blue-50 text-blue-900 px-1 rounded font-bold">
+                        <span className="bg-[#E0F2FE] text-sky-900 px-1 rounded font-bold border border-[#BAE6FD]">
                           PAT: {item.patrimonyNumber}
                         </span>
                       )}
@@ -170,14 +175,14 @@ export const BarcodeLabelGenerator: React.FC<BarcodeLabelGeneratorProps> = ({
                   </div>
 
                   {/* Barcode Graphic + QR simulation */}
-                  <div className="pt-1 border-t border-slate-200 flex items-center justify-between">
+                  <div className="pt-1 border-t border-stone-200 flex items-center justify-between">
                     {/* Simulated SVG Barcode */}
                     <div className="space-y-0.5">
                       <div className="flex items-end gap-[1.5px] h-6">
                         {Array.from({ length: 28 }).map((_, i) => (
                           <div
                             key={i}
-                            className="bg-black"
+                            className="bg-stone-950"
                             style={{
                               width: (i % 3 === 0 ? 2 : 1) + 'px',
                               height: (i % 5 === 0 ? 24 : 20) + 'px',
@@ -185,19 +190,19 @@ export const BarcodeLabelGenerator: React.FC<BarcodeLabelGeneratorProps> = ({
                           />
                         ))}
                       </div>
-                      <span className="text-[9px] font-mono tracking-widest text-slate-600 block">
+                      <span className="text-[9px] font-mono tracking-widest text-stone-600 block">
                         *{item.code}*
                       </span>
                     </div>
 
                     {/* QR Code graphic */}
-                    <div className="w-8 h-8 border border-slate-400 bg-slate-50 flex items-center justify-center p-0.5 shrink-0">
+                    <div className="w-8 h-8 border border-stone-400 bg-stone-50 flex items-center justify-center p-0.5 shrink-0">
                       <div className="grid grid-cols-3 gap-0.5 w-full h-full">
                         {Array.from({ length: 9 }).map((_, idx) => (
                           <div
                             key={idx}
                             className={`rounded-xs ${
-                              idx % 2 === 0 ? 'bg-black' : 'bg-transparent'
+                              idx % 2 === 0 ? 'bg-stone-900' : 'bg-transparent'
                             }`}
                           />
                         ))}
@@ -206,7 +211,7 @@ export const BarcodeLabelGenerator: React.FC<BarcodeLabelGeneratorProps> = ({
                   </div>
 
                   {/* Location badge */}
-                  <div className="text-[8px] text-slate-500 truncate mt-0.5">
+                  <div className="text-[8px] text-stone-500 truncate mt-0.5">
                     📍 {item.location || 'Depósito Central'}
                   </div>
                 </div>

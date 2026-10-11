@@ -30,7 +30,7 @@ export const FloatingBatchBar: React.FC<FloatingBatchBarProps> = ({
           transition={{ type: 'spring', damping: 25, stiffness: 400 }}
           className="fixed bottom-6 left-0 right-0 z-40 flex justify-center pointer-events-none px-4"
         >
-          <div className="pointer-events-auto bg-[#10281b]/95 dark:bg-[#0c1c13]/95 text-white backdrop-blur-xl border border-[#275338] shadow-2xl rounded-2xl px-5 py-3 flex flex-wrap items-center justify-between gap-4 max-w-2xl w-full">
+          <div className="pointer-events-auto bg-[#10281b]/95 text-white backdrop-blur-xl border border-[#275338] shadow-2xl rounded-2xl px-5 py-3 flex flex-wrap items-center justify-between gap-4 max-w-2xl w-full">
             <div className="flex items-center gap-2.5">
               <span className="w-6 h-6 rounded-full bg-[#348a57] text-white flex items-center justify-center text-xs font-bold font-mono">
                 {selectedCount}

@@ -1,15 +1,19 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { RotateCcw, Check, PenTool } from 'lucide-react';
+import { RotateCcw, PenTool } from 'lucide-react';
 
 interface DigitalSignaturePadProps {
-  onSaveSignature: (dataUrl: string) => void;
+  onSave?: (dataUrl: string) => void;
+  onSaveSignature?: (dataUrl: string) => void;
+  onClear?: () => void;
   onClearSignature?: () => void;
 }
 
 export const DigitalSignaturePad: React.FC<DigitalSignaturePadProps> = ({
+  onSave,
   onSaveSignature,
+  onClear,
   onClearSignature,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -83,7 +87,9 @@ export const DigitalSignaturePad: React.FC<DigitalSignaturePadProps> = ({
     setIsDrawing(false);
     const canvas = canvasRef.current;
     if (canvas && hasDrawn) {
-      onSaveSignature(canvas.toDataURL('image/png'));
+      const data = canvas.toDataURL('image/png');
+      if (onSave) onSave(data);
+      if (onSaveSignature) onSaveSignature(data);
     }
   };
 
@@ -95,28 +101,29 @@ export const DigitalSignaturePad: React.FC<DigitalSignaturePadProps> = ({
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     setHasDrawn(false);
+    if (onClear) onClear();
     if (onClearSignature) onClearSignature();
   };
 
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between text-xs">
-        <span className="font-bold text-slate-700 flex items-center gap-1.5">
-          <PenTool className="w-3.5 h-3.5 text-blue-600" />
+        <span className="font-semibold text-stone-700 flex items-center gap-1.5">
+          <PenTool className="w-3.5 h-3.5 text-[#2D6A4F]" />
           Assinatura Digital do Solicitante (Touch / Mouse)
         </span>
         {hasDrawn && (
           <button
             type="button"
             onClick={clearCanvas}
-            className="text-slate-500 hover:text-rose-600 flex items-center gap-1 text-[11px]"
+            className="text-stone-500 hover:text-rose-600 flex items-center gap-1 text-[11px] transition-colors"
           >
             <RotateCcw className="w-3 h-3" /> Limpar
           </button>
         )}
       </div>
 
-      <div className="relative border-2 border-dashed border-slate-300 rounded-xl bg-slate-50/60 overflow-hidden touch-none h-28 flex items-center justify-center">
+      <div className="relative border-2 border-dashed border-stone-300 rounded-xl bg-stone-50/70 overflow-hidden touch-none h-28 flex items-center justify-center">
         <canvas
           ref={canvasRef}
           onMouseDown={startDrawing}
@@ -130,7 +137,7 @@ export const DigitalSignaturePad: React.FC<DigitalSignaturePadProps> = ({
         />
 
         {!hasDrawn && (
-          <div className="absolute pointer-events-none text-slate-400 text-xs flex items-center gap-1.5">
+          <div className="absolute pointer-events-none text-stone-400 text-xs flex items-center gap-1.5">
             <span>Assine aqui com o dedo ou mouse</span>
           </div>
         )}

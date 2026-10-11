@@ -44,7 +44,7 @@ const NotificationItem: React.FC<{
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.9 }}
       transition={{ type: 'spring', stiffness: 450, damping: 30 }}
-      className="pointer-events-auto bg-[#10281b]/95 dark:bg-[#0b1d13]/95 text-white backdrop-blur-xl border border-[#275338] shadow-2xl rounded-full px-4 py-2 sm:px-5 sm:py-2.5 flex items-center gap-3.5 max-w-md w-auto"
+      className="pointer-events-auto bg-[#10281b]/95 text-white backdrop-blur-xl border border-[#275338] shadow-2xl rounded-full px-4 py-2 sm:px-5 sm:py-2.5 flex items-center gap-3.5 max-w-md w-auto"
     >
       {/* Status icon with animated pulse */}
       <div className="shrink-0">

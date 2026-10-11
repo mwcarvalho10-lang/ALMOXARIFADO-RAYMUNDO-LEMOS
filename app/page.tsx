@@ -518,29 +518,29 @@ export default function Home() {
           </main>
 
           {/* Quiet Minimal School Footer Island */}
-          <footer className="print:hidden bg-white dark:bg-[#1A2024] rounded-2xl border border-stone-200/80 dark:border-stone-800 p-3 sm:px-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-500 dark:text-stone-400 shadow-2xs transition-colors">
+          <footer className="print:hidden bg-white rounded-2xl border border-stone-200/80 p-3 sm:px-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-stone-500 shadow-2xs transition-colors">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-stone-700 dark:text-stone-300">{schoolName}</span>
+              <span className="font-semibold text-stone-700">{schoolName}</span>
               <span>· Almoxarifado & Controle Patrimonial</span>
             </div>
             <div className="flex items-center gap-3 text-stone-400">
               <button
                 onClick={() => setIsHelpGuideModalOpen(true)}
-                className="hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                className="hover:text-emerald-700 transition-colors"
               >
                 Guia Docente
               </button>
               <span>·</span>
               <button
                 onClick={() => setIsBackupModalOpen(true)}
-                className="hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                className="hover:text-emerald-700 transition-colors"
               >
                 Backup & APM
               </button>
               <span>·</span>
               <button
                 onClick={() => setIsSustainabilityOpen(true)}
-                className="hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                className="hover:text-emerald-700 transition-colors"
               >
                 Depósito Sustentável
               </button>
@@ -556,8 +556,8 @@ export default function Home() {
         <div className="fixed bottom-5 right-5 z-50 animate-in slide-in-from-bottom-5 duration-200">
           <div className={`p-3.5 rounded-2xl shadow-lg border flex items-start gap-2.5 max-w-sm ${
             toastMessage.type === 'warn'
-              ? 'bg-[#FFF5F5] dark:bg-rose-950 border-[#FED7D7] dark:border-rose-900 text-[#991B1B] dark:text-rose-200'
-              : 'bg-[#EAF4EE] dark:bg-emerald-950 border-[#CFE7D8] dark:border-emerald-900 text-[#1E4620] dark:text-emerald-200'
+              ? 'bg-[#FFF5F5] border-[#FED7D7] text-[#991B1B]'
+              : 'bg-[#EAF4EE] border-[#CFE7D8] text-[#1E4620]'
           }`}>
             {toastMessage.type === 'warn' ? (
               <AlertTriangle className="w-4 h-4 text-[#991B1B] shrink-0 mt-0.5" />
@@ -566,7 +566,7 @@ export default function Home() {
             )}
             <div>
               <h4 className="font-bold text-xs">{toastMessage.title}</h4>
-              <p className="text-[11px] text-stone-600 dark:text-stone-300 mt-0.5 leading-snug">{toastMessage.description}</p>
+              <p className="text-[11px] text-stone-600 mt-0.5 leading-snug">{toastMessage.description}</p>
             </div>
           </div>
         </div>

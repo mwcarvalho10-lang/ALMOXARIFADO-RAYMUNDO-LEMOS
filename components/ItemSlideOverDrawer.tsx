@@ -9,12 +9,10 @@ import {
   Plus, 
   Minus, 
   Edit2, 
-  Clock, 
   DollarSign, 
   Printer, 
   AlertTriangle, 
   CheckCircle2, 
-  Calendar,
   Layers,
   ArrowDownLeft,
   ArrowUpRight
@@ -62,7 +60,7 @@ export const ItemSlideOverDrawer: React.FC<ItemSlideOverDrawerProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"
+            className="absolute inset-0 bg-stone-900/30 backdrop-blur-xs transition-opacity"
           />
 
           <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
@@ -71,12 +69,12 @@ export const ItemSlideOverDrawer: React.FC<ItemSlideOverDrawerProps> = ({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 350 }}
-              className="w-screen max-w-md bg-white dark:bg-[#0f1d16] shadow-2xl border-l border-[#d8eadc] dark:border-[#1d3827] flex flex-col justify-between"
+              className="w-screen max-w-md bg-white shadow-2xl border-l border-stone-200/90 flex flex-col justify-between"
             >
-              {/* Drawer Header in Pastel Green */}
-              <div className="p-6 border-b border-[#d8eadc] dark:border-[#1d3827] flex items-center justify-between bg-[#f4faf6] dark:bg-[#122419]">
+              {/* Drawer Header in Soft Green */}
+              <div className="p-6 border-b border-stone-200/80 flex items-center justify-between bg-[#F8FAF9]">
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-lg bg-[#e5f3e9] dark:bg-[#183825] text-[#18532f] dark:text-[#a2e2be] border border-[#cfe6d6] dark:border-[#224b33]">
+                  <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-lg bg-[#EAF4EE] text-[#1E4620] border border-[#CFE7D8]">
                     {item.code}
                   </span>
                   <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-lg ${catInfo.badgeBg} ${catInfo.badgeText}`}>
@@ -85,7 +83,7 @@ export const ItemSlideOverDrawer: React.FC<ItemSlideOverDrawerProps> = ({
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-1 rounded-lg text-[#527d63] dark:text-[#8eb89e] hover:text-[#184f2f] hover:bg-[#e4f3e8] dark:hover:bg-[#163122] transition-colors"
+                  className="p-1 rounded-lg text-stone-500 hover:text-stone-800 hover:bg-stone-100 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -95,26 +93,26 @@ export const ItemSlideOverDrawer: React.FC<ItemSlideOverDrawerProps> = ({
               <div className="flex-1 p-6 space-y-6 overflow-y-auto text-xs sm:text-sm">
                 {/* Title & Status */}
                 <div>
-                  <h3 className="text-lg font-extrabold text-[#143e26] dark:text-[#e4f6ec] leading-snug">
+                  <h3 className="text-lg font-bold text-stone-900 leading-snug">
                     {item.name}
                   </h3>
                   <div className="flex items-center gap-2 mt-2">
                     {isCritical ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 px-2.5 py-0.5 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-[#991B1B] bg-[#FFF5F5] border border-[#FED7D7] px-2.5 py-0.5 rounded-full">
                         <AlertTriangle className="w-3.5 h-3.5" /> Estoque Crítico
                       </span>
                     ) : isLow ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-100 dark:bg-amber-950/60 dark:text-amber-300 px-2.5 py-0.5 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-[#92400E] bg-[#FFFBEB] border border-[#FDE68A] px-2.5 py-0.5 rounded-full">
                         <AlertTriangle className="w-3.5 h-3.5" /> Estoque Baixo
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-[#1a5532] bg-[#def2e4] dark:bg-emerald-950/60 dark:text-[#8fe2af] px-2.5 py-0.5 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-[#1E4620] bg-[#EAF4EE] border border-[#CFE7D8] px-2.5 py-0.5 rounded-full">
                         <CheckCircle2 className="w-3.5 h-3.5" /> Estoque Regular
                       </span>
                     )}
 
                     {item.condition && (
-                      <span className="text-xs text-[#527d63] dark:text-[#8eb89e] capitalize">
+                      <span className="text-xs text-stone-500 capitalize">
                         Estado: {item.condition}
                       </span>
                     )}
@@ -122,20 +120,20 @@ export const ItemSlideOverDrawer: React.FC<ItemSlideOverDrawerProps> = ({
                 </div>
 
                 {/* Stock Level Card */}
-                <div className="p-4 rounded-2xl bg-[#f5faf6] dark:bg-[#12281c] border border-[#d8eadc] dark:border-[#1d3827] space-y-3">
+                <div className="p-4 rounded-2xl bg-[#F8FAF9] border border-stone-200/80 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-[#4e755c] dark:text-[#8ea998] font-bold">Saldo Disponível:</span>
-                    <span className="text-2xl font-black text-[#143e26] dark:text-[#e4f6ec]">
+                    <span className="text-stone-600 font-semibold">Saldo Disponível:</span>
+                    <span className="text-2xl font-bold text-[#1E4620]">
                       {item.quantity}{' '}
-                      <span className="text-xs font-normal text-[#527d63] dark:text-[#8eb89e]">{item.unit}</span>
+                      <span className="text-xs font-normal text-stone-500">{item.unit}</span>
                     </span>
                   </div>
 
                   {/* Visual Bar */}
-                  <div className="w-full bg-[#dceee1] dark:bg-[#1a3826] h-2 rounded-full overflow-hidden">
+                  <div className="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all ${
-                        isCritical ? 'bg-rose-500' : isLow ? 'bg-amber-500' : 'bg-[#348a57]'
+                        isCritical ? 'bg-rose-500' : isLow ? 'bg-amber-500' : 'bg-[#2D6A4F]'
                       }`}
                       style={{
                         width: `${Math.min(100, Math.max(5, (item.quantity / (item.targetSemesterStock || 1)) * 100))}%`,
@@ -143,77 +141,77 @@ export const ItemSlideOverDrawer: React.FC<ItemSlideOverDrawerProps> = ({
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs text-[#527d63] dark:text-[#8eb89e] pt-1">
-                    <div>Mínimo: <strong>{item.minQuantity}</strong> {item.unit}</div>
-                    <div>Meta Semestre: <strong>{item.targetSemesterStock}</strong> {item.unit}</div>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-stone-600 pt-1">
+                    <div>Mínimo: <strong className="text-stone-800">{item.minQuantity}</strong> {item.unit}</div>
+                    <div>Meta Semestre: <strong className="text-stone-800">{item.targetSemesterStock}</strong> {item.unit}</div>
                   </div>
                 </div>
 
                 {/* Location & Patrimony Details */}
-                <div className="space-y-2.5">
-                  <div className="flex items-center gap-2 text-[#245336] dark:text-[#a0dbb7]">
-                    <MapPin className="w-4 h-4 text-[#348a57] shrink-0" />
+                <div className="space-y-2.5 bg-stone-50/70 p-3.5 rounded-2xl border border-stone-200/70">
+                  <div className="flex items-center gap-2 text-stone-700">
+                    <MapPin className="w-4 h-4 text-[#2D6A4F] shrink-0" />
                     <span>Localização: <strong>{item.location || 'Depósito Central'}</strong></span>
                   </div>
 
                   {item.patrimonyNumber && (
-                    <div className="flex items-center gap-2 text-[#175630] dark:text-[#a0e4ba]">
-                      <Tag className="w-4 h-4 shrink-0" />
-                      <span>Número de Tombamento: <strong>{item.patrimonyNumber}</strong></span>
+                    <div className="flex items-center gap-2 text-stone-700">
+                      <Tag className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Número de Tombamento: <strong className="font-mono">{item.patrimonyNumber}</strong></span>
                     </div>
                   )}
 
                   {item.brand && (
-                    <div className="flex items-center gap-2 text-[#245336] dark:text-[#a0dbb7]">
-                      <Layers className="w-4 h-4 text-[#5a8a6d] shrink-0" />
+                    <div className="flex items-center gap-2 text-stone-700">
+                      <Layers className="w-4 h-4 text-stone-500 shrink-0" />
                       <span>Fabricante / Marca: <strong>{item.brand}</strong></span>
                     </div>
                   )}
 
-                  <div className="flex items-center gap-2 text-[#245336] dark:text-[#a0dbb7]">
+                  <div className="flex items-center gap-2 text-stone-700">
                     <DollarSign className="w-4 h-4 text-emerald-600 shrink-0" />
                     <span>
-                      Custo Médio: <strong>{item.estimatedUnitCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong> (Total em estoque: {totalValuation.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })})
+                      Custo Médio: <strong>{item.estimatedUnitCost.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong> (Total: {totalValuation.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })})
                     </span>
                   </div>
                 </div>
 
                 {/* Notes */}
                 {item.notes && (
-                  <div className="p-3 bg-[#fef9ee] dark:bg-[#2c2010] border border-[#fde8be] dark:border-[#523d19] rounded-xl text-xs text-[#825412] dark:text-[#fde68a]">
+                  <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl text-xs text-amber-900">
                     <strong>Observações:</strong> {item.notes}
                   </div>
                 )}
 
                 {/* Recent Movement History on this item */}
-                <div className="space-y-2 pt-2 border-t border-[#d8eadc] dark:border-[#1d3827]">
-                  <h4 className="font-bold text-xs uppercase tracking-wider text-[#527d63] dark:text-[#8eb89e]">
+                <div className="space-y-2 pt-2 border-t border-stone-200/80">
+                  <h4 className="font-bold text-xs uppercase tracking-wider text-stone-500">
                     Últimas Retiradas & Entradas
                   </h4>
 
                   {itemMovements.length === 0 ? (
-                    <p className="text-xs text-[#759e85] italic">Nenhuma movimentação recente deste item.</p>
+                    <p className="text-xs text-stone-400 italic">Nenhuma movimentação recente deste item.</p>
                   ) : (
-                    <div className="divide-y divide-[#e5f1e8] dark:divide-[#1d3827] text-xs">
+                    <div className="divide-y divide-stone-100 text-xs">
                       {itemMovements.map((m) => (
                         <div key={m.id} className="py-2 flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <span className={`p-1 rounded-lg ${
-                              m.type === 'entrada' ? 'bg-[#ddf2e3] text-[#14532d]' : 'bg-rose-100 text-rose-700'
+                              m.type === 'entrada' ? 'bg-[#EAF4EE] text-[#1E4620]' : 'bg-rose-50 text-rose-700'
                             }`}>
                               {m.type === 'entrada' ? <ArrowDownLeft className="w-3 h-3" /> : <ArrowUpRight className="w-3 h-3" />}
                             </span>
                             <div>
-                              <div className="font-semibold text-[#143e26] dark:text-[#e4f6ec] truncate max-w-[170px]">
+                              <div className="font-semibold text-stone-800 truncate max-w-[170px]">
                                 {m.responsible}
                               </div>
-                              <div className="text-[10px] text-[#638d74]">
+                              <div className="text-[10px] text-stone-400">
                                 {new Date(m.date).toLocaleDateString('pt-BR')}
                               </div>
                             </div>
                           </div>
                           <span className={`font-mono font-bold ${
-                            m.type === 'entrada' ? 'text-[#1e6139] dark:text-[#8ee2ae]' : 'text-rose-600 dark:text-rose-400'
+                            m.type === 'entrada' ? 'text-emerald-700' : 'text-rose-600'
                           }`}>
                             {m.type === 'entrada' ? '+' : '-'}{m.quantity}
                           </span>
@@ -225,13 +223,13 @@ export const ItemSlideOverDrawer: React.FC<ItemSlideOverDrawerProps> = ({
               </div>
 
               {/* Drawer Footer Actions */}
-              <div className="p-4 bg-[#f4faf6] dark:bg-[#122419] border-t border-[#d8eadc] dark:border-[#1d3827] grid grid-cols-2 gap-2">
+              <div className="p-4 bg-[#F8FAF9] border-t border-stone-200/80 grid grid-cols-2 gap-2">
                 <button
                   onClick={() => {
                     onClose();
                     onOpenMovement(item.id, 'entrada');
                   }}
-                  className="py-2.5 px-3 bg-[#348a57] hover:bg-[#2b7549] text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm shadow-[#348a57]/20 transition-colors"
+                  className="py-2.5 px-3 bg-[#2D6A4F] hover:bg-[#1E4620] text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                   + Entrada
@@ -242,7 +240,7 @@ export const ItemSlideOverDrawer: React.FC<ItemSlideOverDrawerProps> = ({
                     onClose();
                     onOpenMovement(item.id, 'saida');
                   }}
-                  className="py-2.5 px-3 bg-[#8e2926] hover:bg-[#782320] text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                  className="py-2.5 px-3 bg-[#991B1B] hover:bg-[#7F1D1D] text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
                 >
                   <Minus className="w-4 h-4" />
                   - Saída
@@ -253,9 +251,9 @@ export const ItemSlideOverDrawer: React.FC<ItemSlideOverDrawerProps> = ({
                     onClose();
                     onEditItem(item);
                   }}
-                  className="col-span-1 py-2 px-3 bg-[#edf7f1] dark:bg-[#163122] text-[#1c5332] dark:text-[#a0e2ba] border border-[#cbe4d4] dark:border-[#224b34] font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 hover:bg-[#dff2e5] transition-colors"
+                  className="col-span-1 py-2 px-3 bg-white text-stone-700 border border-stone-300 font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 hover:bg-stone-50 transition-colors"
                 >
-                  <Edit2 className="w-3.5 h-3.5" />
+                  <Edit2 className="w-3.5 h-3.5 text-stone-500" />
                   Editar Cadastro
                 </button>
 
@@ -264,7 +262,7 @@ export const ItemSlideOverDrawer: React.FC<ItemSlideOverDrawerProps> = ({
                     onClose();
                     onPrintSingleLabel(item);
                   }}
-                  className="col-span-1 py-2 px-3 bg-[#fef3c7] dark:bg-[#2d2212] text-[#92400e] dark:text-[#fde68a] border border-[#fde68a] dark:border-[#78350f] font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 hover:bg-[#fde68a] transition-colors"
+                  className="col-span-1 py-2 px-3 bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A] font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 hover:bg-amber-100/70 transition-colors"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   Imprimir Etiqueta

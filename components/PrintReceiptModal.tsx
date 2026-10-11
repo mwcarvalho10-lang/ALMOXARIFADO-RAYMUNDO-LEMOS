@@ -29,27 +29,32 @@ export const PrintReceiptModal: React.FC<PrintReceiptModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0c1711]/50 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white rounded-3xl shadow-2xl border border-[#d8eadc] w-full max-w-xl my-8 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/30 backdrop-blur-xs overflow-y-auto">
+      <div className="bg-white rounded-3xl shadow-2xl border border-stone-200/80 w-full max-w-xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Modal Toolbar (hidden when printing) */}
-        <div className="print:hidden px-6 py-3.5 bg-[#f4faf6] border-b border-[#d8eadc] flex items-center justify-between">
+        <div className="print:hidden px-6 py-4 bg-[#FAFBF9] border-b border-stone-200 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <School className="w-4 h-4 text-[#348a57]" />
-            <h3 className="text-sm font-bold text-[#143e26]">
-              Comprovante de Movimentação de Estoque
-            </h3>
+            <div className="p-2 bg-[#EAF4EE] text-[#1E4620] rounded-xl border border-[#CFE7D8]">
+              <School className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-stone-900">
+                Comprovante de Movimentação de Estoque
+              </h3>
+              <p className="text-[11px] text-stone-500">Documento oficial para prestação e protocolo</p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#348a57] text-white text-xs font-semibold rounded-xl hover:bg-[#287b4a] transition-colors shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#2D6A4F] text-white text-xs font-semibold rounded-xl hover:bg-[#1E4620] transition-colors shadow-2xs"
             >
               <Printer className="w-3.5 h-3.5" />
               Imprimir
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 text-[#527d63] hover:text-[#184f2f] rounded-lg hover:bg-[#e4f3e8]"
+              className="p-1.5 text-stone-400 hover:text-stone-700 rounded-lg hover:bg-stone-100 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>

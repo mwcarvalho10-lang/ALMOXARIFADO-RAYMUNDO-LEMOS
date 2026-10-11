@@ -1,4 +1,4 @@
-import { InventoryItem, StockMovement, EquipmentLoan, SchoolKit } from '@/types/inventory';
+import { InventoryItem, StockMovement, EquipmentLoan, SchoolKit, Category } from '@/types/inventory';
 import { 
   INITIAL_INVENTORY_ITEMS, 
   INITIAL_STOCK_MOVEMENTS, 
@@ -12,8 +12,44 @@ const STORAGE_KEYS = {
   LOANS: 'almoxarifado_escolar_loans_v2',
   KITS: 'almoxarifado_escolar_kits_v2',
   SCHOOL_NAME: 'almoxarifado_escolar_name_v2',
-  DARK_MODE: 'almoxarifado_escolar_dark_mode_v2',
+  BACKUP_HISTORY: 'almoxarifado_escolar_backups_v2',
 };
+
+const VALID_CATEGORIES: Category[] = ['papelaria', 'jogos', 'capital', 'limpeza', 'outros'];
+
+function sanitizeItem(raw: any, index: number): InventoryItem {
+  const category: Category = VALID_CATEGORIES.includes(raw.category) ? raw.category : 'outros';
+  const quantity = typeof raw.quantity === 'number' && !isNaN(raw.quantity) ? Math.max(0, raw.quantity) : 0;
+  const minQuantity = typeof raw.minQuantity === 'number' && !isNaN(raw.minQuantity) ? Math.max(0, raw.minQuantity) : 5;
+  const targetSemesterStock = typeof raw.targetSemesterStock === 'number' && !isNaN(raw.targetSemesterStock) 
+    ? Math.max(minQuantity * 2, raw.targetSemesterStock) 
+    : Math.max(10, minQuantity * 2);
+
+  return {
+    id: typeof raw.id === 'string' && raw.id ? raw.id : `item-${Date.now()}-${index}`,
+    code: typeof raw.code === 'string' && raw.code ? raw.code : `MAT-${String(index + 1).padStart(3, '0')}`,
+    name: typeof raw.name === 'string' && raw.name ? raw.name.trim() : `Material Escolar #${index + 1}`,
+    category,
+    quantity,
+    minQuantity,
+    targetSemesterStock,
+    unit: typeof raw.unit === 'string' && raw.unit ? raw.unit : 'un',
+    location: typeof raw.location === 'string' ? raw.location : 'Depósito Central',
+    estimatedUnitCost: typeof raw.estimatedUnitCost === 'number' && !isNaN(raw.estimatedUnitCost) ? Math.max(0, raw.estimatedUnitCost) : 0,
+    lastSupplier: typeof raw.lastSupplier === 'string' ? raw.lastSupplier : undefined,
+    notes: typeof raw.notes === 'string' ? raw.notes : undefined,
+    isFavorite: Boolean(raw.isFavorite),
+    patrimonyNumber: typeof raw.patrimonyNumber === 'string' ? raw.patrimonyNumber : undefined,
+    brand: typeof raw.brand === 'string' ? raw.brand : undefined,
+    fundingSource: typeof raw.fundingSource === 'string' ? raw.fundingSource : undefined,
+    expirationDate: typeof raw.expirationDate === 'string' ? raw.expirationDate : undefined,
+    isToxicFree: Boolean(raw.isToxicFree),
+    gradeCycle: typeof raw.gradeCycle === 'string' ? raw.gradeCycle : 'todos',
+    shelfLifeDays: typeof raw.shelfLifeDays === 'number' ? raw.shelfLifeDays : undefined,
+    createdAt: typeof raw.createdAt === 'string' ? raw.createdAt : new Date().toISOString(),
+    updatedAt: typeof raw.updatedAt === 'string' ? raw.updatedAt : new Date().toISOString(),
+  };
+}
 
 export function getStoredItems(): InventoryItem[] {
   if (typeof window === 'undefined') return INITIAL_INVENTORY_ITEMS;
@@ -24,7 +60,11 @@ export function getStoredItems(): InventoryItem[] {
       return INITIAL_INVENTORY_ITEMS;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_INVENTORY_ITEMS;
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      saveStoredItems(INITIAL_INVENTORY_ITEMS);
+      return INITIAL_INVENTORY_ITEMS;
+    }
+    return parsed.map((it, idx) => sanitizeItem(it, idx));
   } catch (err) {
     console.error('Erro ao carregar itens do localStorage:', err);
     return INITIAL_INVENTORY_ITEMS;
@@ -133,24 +173,6 @@ export function setSchoolName(name: string): void {
   }
 }
 
-export function getStoredDarkMode(): boolean {
-  if (typeof window === 'undefined') return false;
-  try {
-    return localStorage.getItem(STORAGE_KEYS.DARK_MODE) === 'true';
-  } catch {
-    return false;
-  }
-}
-
-export function setStoredDarkMode(isDark: boolean): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(STORAGE_KEYS.DARK_MODE, isDark ? 'true' : 'false');
-  } catch (err) {
-    console.error('Erro ao salvar dark mode:', err);
-  }
-}
-
 export function resetToDefaults(): { 
   items: InventoryItem[]; 
   movements: StockMovement[];
@@ -162,7 +184,6 @@ export function resetToDefaults(): {
     localStorage.removeItem(STORAGE_KEYS.MOVEMENTS);
     localStorage.removeItem(STORAGE_KEYS.LOANS);
     localStorage.removeItem(STORAGE_KEYS.KITS);
-    localStorage.removeItem(STORAGE_KEYS.DARK_MODE);
   }
   return {
     items: INITIAL_INVENTORY_ITEMS,

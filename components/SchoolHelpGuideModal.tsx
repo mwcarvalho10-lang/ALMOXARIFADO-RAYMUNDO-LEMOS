@@ -8,9 +8,7 @@ import {
   Clock, 
   ShieldCheck, 
   Leaf, 
-  Tag, 
-  CheckCircle2,
-  AlertCircle
+  Tag
 } from 'lucide-react';
 
 interface SchoolHelpGuideModalProps {
@@ -53,19 +51,19 @@ export const SchoolHelpGuideModal: React.FC<SchoolHelpGuideModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white dark:bg-[#1A2024] rounded-3xl shadow-xl border border-stone-200/80 dark:border-stone-800 w-full max-w-xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/30 backdrop-blur-xs overflow-y-auto">
+      <div className="bg-white rounded-3xl shadow-xl border border-stone-200/80 w-full max-w-xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="px-6 py-4 bg-[#FAFBF9] dark:bg-[#151A1D] border-b border-stone-200/80 dark:border-stone-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-[#FAFBF9] border-b border-stone-200/80 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-[#EAF4EE] dark:bg-emerald-950/60 text-[#245D40] dark:text-emerald-300 rounded-xl">
+            <div className="p-2 bg-[#EAF4EE] text-[#1E4620] rounded-xl border border-[#CFE7D8]">
               <HelpCircle className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">
+              <h3 className="text-base font-bold text-stone-900">
                 Guia Rápido do Almoxarifado Escolar
               </h3>
-              <p className="text-xs text-stone-500 dark:text-stone-400">
+              <p className="text-xs text-stone-500">
                 Boas práticas, conservação e normas internas para o corpo docente
               </p>
             </div>
@@ -74,7 +72,7 @@ export const SchoolHelpGuideModal: React.FC<SchoolHelpGuideModalProps> = ({
             onClick={onClose}
             className="text-stone-400 hover:text-stone-600 p-1 rounded-lg hover:bg-stone-100 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -85,16 +83,16 @@ export const SchoolHelpGuideModal: React.FC<SchoolHelpGuideModalProps> = ({
             return (
               <div
                 key={idx}
-                className="p-3.5 rounded-2xl bg-[#FBFBFA] dark:bg-stone-800/40 border border-stone-200/70 dark:border-stone-800 flex items-start gap-3"
+                className="p-3.5 rounded-2xl bg-[#F8FAF9] border border-stone-200/80 flex items-start gap-3"
               >
-                <div className="p-1.5 rounded-xl bg-white dark:bg-stone-800 text-[#245D40] dark:text-emerald-300 shrink-0 border border-stone-200/60 dark:border-stone-700 shadow-2xs mt-0.5">
+                <div className="p-1.5 rounded-xl bg-white text-[#2D6A4F] shrink-0 border border-stone-200/80 shadow-2xs mt-0.5">
                   <Icon className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-stone-900 dark:text-stone-100">
+                  <h4 className="font-bold text-stone-900">
                     {t.title}
                   </h4>
-                  <p className="text-[11px] text-stone-600 dark:text-stone-400 mt-1 leading-relaxed">
+                  <p className="text-[11px] text-stone-600 mt-1 leading-relaxed">
                     {t.desc}
                   </p>
                 </div>
@@ -102,10 +100,10 @@ export const SchoolHelpGuideModal: React.FC<SchoolHelpGuideModalProps> = ({
             );
           })}
 
-          <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex justify-end">
+          <div className="pt-3 border-t border-stone-100 flex justify-end">
             <button
               onClick={onClose}
-              className="px-4 py-1.5 rounded-xl bg-[#2D6A4F] text-white hover:bg-[#23563F] font-semibold"
+              className="px-4 py-2 rounded-xl bg-[#2D6A4F] text-white hover:bg-[#1E4620] font-semibold transition-colors shadow-2xs"
             >
               Entendido
             </button>

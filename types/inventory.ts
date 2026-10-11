@@ -95,6 +95,7 @@ export interface InventoryItem {
   isToxicFree?: boolean; // Selo atóxico para educação infantil
   isFavorite?: boolean; // Acesso rápido aos materiais mais usados
   maintenanceStatus?: 'ok' | 'em_manutencao' | 'necessita_reparo';
+  shelfLifeDays?: number;
   createdAt: string;
   updatedAt: string;
 }

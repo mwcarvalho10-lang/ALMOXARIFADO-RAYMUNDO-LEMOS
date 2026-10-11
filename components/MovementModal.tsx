@@ -112,23 +112,28 @@ export const MovementModal: React.FC<MovementModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white dark:bg-[#1A2024] rounded-3xl shadow-xl border border-stone-200/80 dark:border-stone-800 w-full max-w-xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/30 backdrop-blur-xs overflow-y-auto">
+      <div className="bg-white rounded-3xl shadow-xl border border-stone-200/80 w-full max-w-xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className={`px-6 py-4 border-b flex items-center justify-between ${
-          type === 'entrada' ? 'bg-[#EAF4EE] dark:bg-emerald-950/40 border-[#CFE7D8] dark:border-emerald-900/60' : 'bg-[#FFF4ED] dark:bg-amber-950/40 border-[#FED7AA] dark:border-amber-900/60'
+          type === 'entrada' ? 'bg-[#EAF6ED] border-[#CDE5D5]' : 'bg-[#FFF7ED] border-[#FED7AA]'
         }`}>
           <div className="flex items-center gap-2.5">
-            <div className={`p-2 rounded-xl ${
-              type === 'entrada' ? 'bg-[#D2EEDA] text-[#1E4620]' : 'bg-[#FED7AA] text-[#8C3F1B]'
+            <div className={`p-2 rounded-xl border ${
+              type === 'entrada' ? 'bg-[#D2EEDA] text-[#14532D] border-[#BBF7D0]' : 'bg-[#FED7AA] text-[#C2410C] border-[#FDBA74]'
             }`}>
-              {type === 'entrada' ? <ArrowDownLeft className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
+              {type === 'entrada' ? <ArrowDownLeft className="w-5 h-5 text-[#059669]" /> : <ArrowUpRight className="w-5 h-5 text-[#EA580C]" />}
             </div>
             <div>
-              <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">
-                {type === 'entrada' ? 'Registrar Entrada de Material' : 'Registrar Saída / Requisição de Material'}
-              </h3>
-              <p className="text-xs text-stone-500 dark:text-stone-400">
+              <div className="flex items-baseline gap-2">
+                <h3 className="text-base font-bold text-stone-900">
+                  {type === 'entrada' ? 'Registrar Entrada de Material' : 'Registrar Saída / Requisição'}
+                </h3>
+                <span className="hidden sm:inline font-cursive text-lg text-emerald-800 font-normal">
+                  ~ livro de registro ~
+                </span>
+              </div>
+              <p className="text-xs text-stone-600">
                 {type === 'entrada' ? 'Recebimento e reabastecimento do depósito' : 'Retirada para sala de aula, professor ou setor escolar'}
               </p>
             </div>
@@ -142,9 +147,9 @@ export const MovementModal: React.FC<MovementModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
           {/* Movement Type Toggle */}
-          <div className="flex rounded-xl bg-stone-100 dark:bg-stone-800 p-1 border border-stone-200/70 dark:border-stone-700">
+          <div className="flex rounded-xl bg-stone-100 p-1 border border-stone-200/70">
             <button
               type="button"
               onClick={() => {
@@ -153,11 +158,11 @@ export const MovementModal: React.FC<MovementModalProps> = ({
               }}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
                 type === 'saida'
-                  ? 'bg-white dark:bg-[#1A2024] text-[#8C3F1B] border border-[#FED7AA] shadow-2xs'
-                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900'
+                  ? 'bg-white text-[#C2410C] border border-[#FED7AA] shadow-2xs'
+                  : 'text-stone-600 hover:text-stone-900'
               }`}
             >
-              <ArrowUpRight className="w-3.5 h-3.5 text-[#B45309]" />
+              <ArrowUpRight className="w-3.5 h-3.5 text-[#EA580C]" />
               Saída (Uso Escolar)
             </button>
             <button
@@ -168,24 +173,24 @@ export const MovementModal: React.FC<MovementModalProps> = ({
               }}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
                 type === 'entrada'
-                  ? 'bg-white dark:bg-[#1A2024] text-[#1E4620] border border-[#CFE7D8] shadow-2xs'
-                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900'
+                  ? 'bg-white text-[#14532D] border border-[#CDE5D5] shadow-2xs'
+                  : 'text-stone-600 hover:text-stone-900'
               }`}
             >
-              <ArrowDownLeft className="w-3.5 h-3.5 text-[#245D40]" />
+              <ArrowDownLeft className="w-3.5 h-3.5 text-[#059669]" />
               Entrada (Reposição)
             </button>
           </div>
 
           {/* Item Selector */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
+            <label className="block text-xs font-bold text-stone-700 mb-1">
               Selecione o Material do Depósito *
             </label>
             <select
               value={selectedItemId}
               onChange={(e) => setSelectedItemId(e.target.value)}
-              className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg border border-slate-200 bg-white focus:border-blue-500 focus:outline-hidden"
+              className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 bg-[#FAFBF9] focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-emerald-500 font-medium"
             >
               {items.map((it) => (
                 <option key={it.id} value={it.id}>
@@ -197,105 +202,87 @@ export const MovementModal: React.FC<MovementModalProps> = ({
 
           {/* Current Stock Preview Card */}
           {currentItem && (
-            <div className={`p-3 rounded-xl border text-xs flex items-center justify-between ${
-              type === 'entrada'
-                ? 'bg-emerald-50/60 border-emerald-200 text-emerald-900'
-                : 'bg-rose-50/60 border-rose-200 text-rose-900'
+            <div className={`p-3 rounded-xl border text-xs flex items-center justify-between shadow-2xs ${
+              type === 'entrada' ? 'bg-[#ECFDF5] border-[#A7F3D0]' : 'bg-[#FFF7ED] border-[#FED7AA]'
             }`}>
               <div>
-                <span className="font-bold">Saldo Atual: </span>
-                <span className="font-mono text-sm">{currentItem.quantity} {currentItem.unit}</span>
-                {currentItem.patrimonyNumber && (
-                  <span className="ml-2 font-mono bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">
-                    Patrimônio: {currentItem.patrimonyNumber}
-                  </span>
-                )}
+                <span className="font-semibold text-stone-800">Saldo Atual:</span>{' '}
+                <strong className="text-stone-900 font-bold tabular-nums">{currentItem.quantity} {currentItem.unit}</strong>
+                <span className="text-[11px] text-stone-500 ml-2">({currentItem.location || 'Depósito Central'})</span>
               </div>
-              <div>
-                <span className="font-bold">Após Operação: </span>
-                <span className="font-mono text-sm font-extrabold">
+              <div className="font-semibold">
+                Novo saldo previsto:{' '}
+                <strong className={`tabular-nums ${type === 'entrada' ? 'text-[#065F46]' : 'text-[#C2410C]'}`}>
                   {type === 'entrada'
                     ? currentItem.quantity + (quantity || 0)
                     : Math.max(0, currentItem.quantity - (quantity || 0))}{' '}
                   {currentItem.unit}
-                </span>
+                </strong>
               </div>
             </div>
           )}
 
-          {/* Quantity & Unit */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Quantity and Responsible Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Quantidade a {type === 'entrada' ? 'Receber' : 'Retirar'} *
+              <label className="block text-xs font-bold text-stone-700 mb-1">
+                Quantidade *
               </label>
               <input
                 type="number"
                 min="1"
-                max={type === 'saida' && currentItem ? currentItem.quantity : undefined}
+                required
                 value={quantity}
                 onChange={(e) => setQuantity(parseInt(e.target.value) || 0)}
-                className="w-full px-3 py-2 text-xs sm:text-sm font-bold text-slate-900 rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-hidden"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 bg-[#FAFBF9] focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-emerald-500 font-bold tabular-nums"
               />
             </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Unidade
+
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-bold text-stone-700 mb-1 flex items-center gap-1">
+                <User className="w-3.5 h-3.5 text-stone-400" />
+                Nome do Responsável / Docente *
               </label>
               <input
                 type="text"
-                disabled
-                value={currentItem?.unit || 'un'}
-                className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-100 rounded-lg border border-slate-200 text-slate-500"
+                required
+                value={responsible}
+                onChange={(e) => setResponsible(e.target.value)}
+                placeholder="Ex: Prof. Carlos Eduardo / Ana Secretaria"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 bg-[#FAFBF9] focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-emerald-500 font-medium"
               />
             </div>
           </div>
 
-          {/* Responsible Person & Role */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Role and Classroom */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                <User className="w-3.5 h-3.5 text-slate-400" />
-                {type === 'entrada' ? 'Entregue / Conferido por *' : 'Solicitante / Professor(a) *'}
-              </label>
-              <input
-                type="text"
-                value={responsible}
-                onChange={(e) => setResponsible(e.target.value)}
-                placeholder={type === 'entrada' ? 'Ex: Almoxarife Valdemir' : 'Ex: Profª Ana Lúcia'}
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-hidden"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                Cargo / Função
+              <label className="block text-xs font-bold text-stone-700 mb-1">
+                Função / Setor
               </label>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg border border-slate-200 bg-white focus:border-blue-500 focus:outline-hidden"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 bg-[#FAFBF9] focus:bg-white focus:outline-hidden font-medium"
               >
                 <option value="Professor(a)">Professor(a)</option>
-                <option value="Coordenação Pedagógica">Coordenação Pedagógica</option>
-                <option value="Equipe de Limpeza e Apoio">Equipe de Limpeza e Apoio</option>
-                <option value="Direção Escolar">Direção Escolar</option>
-                <option value="Secretaria">Secretaria Escolar</option>
-                <option value="TI / Informática">TI / Informática</option>
-                <option value="Responsável pelo Depósito">Responsável pelo Depósito</option>
+                <option value="Coordenador(a)">Coordenador(a)</option>
+                <option value="Diretor(a)">Diretor(a)</option>
+                <option value="Secretaria">Secretaria</option>
+                <option value="Equipe de Limpeza">Equipe de Limpeza</option>
+                <option value="Monitor(a)">Monitor(a)</option>
+                <option value="Fornecedor / Entrega">Fornecedor / Entrega</option>
               </select>
             </div>
-          </div>
 
-          {/* Destination / Reason & Classroom */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 dark:text-stone-300 mb-1 flex items-center gap-1">
-                <School className="w-3.5 h-3.5 text-slate-400" />
+              <label className="block text-xs font-bold text-stone-700 mb-1 flex items-center gap-1">
+                <School className="w-3.5 h-3.5 text-stone-400" />
                 {type === 'entrada' ? 'Origem / Motivo da Entrada *' : 'Finalidade Pedagógica / Atividade *'}
               </label>
               <input
                 type="text"
+                required
                 value={destinationOrReason}
                 onChange={(e) => setDestinationOrReason(e.target.value)}
                 placeholder={
@@ -303,20 +290,7 @@ export const MovementModal: React.FC<MovementModalProps> = ({
                     ? 'Ex: Reposição Semestral - Distribuidora Papel & Arte'
                     : 'Ex: Projeto de Artes / Feira Cultural / Aulas Regulares'
                 }
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg border border-slate-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-hidden"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-stone-300 mb-1">
-                Turma / Sala
-              </label>
-              <input
-                type="text"
-                value={classroom}
-                onChange={(e) => setClassroom(e.target.value)}
-                placeholder="Ex: 5º Ano B / Lab"
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg border border-slate-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-hidden"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 bg-[#FAFBF9] focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-emerald-500 font-medium"
               />
             </div>
           </div>
@@ -324,89 +298,81 @@ export const MovementModal: React.FC<MovementModalProps> = ({
           {/* Optional Invoice or Notes */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
-                {type === 'entrada' ? 'Nota Fiscal / Guia (Opcional)' : 'Nº de Cautela / Memorando'}
+              <label className="block text-xs font-bold text-stone-700 mb-1">
+                {type === 'entrada' ? 'Nota Fiscal / Guia (Opcional)' : 'Turma / Sala / Cautela'}
               </label>
               <input
                 type="text"
                 value={invoiceNumber}
                 onChange={(e) => setInvoiceNumber(e.target.value)}
-                placeholder="Ex: NF-4921 ou MEMO-12"
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-hidden"
+                placeholder={type === 'entrada' ? 'Ex: NF-4921 ou GUIA-08' : 'Ex: 4º Ano A - Sala 12'}
+                className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 bg-[#FAFBF9] focus:bg-white focus:outline-hidden"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">
+              <label className="block text-xs font-bold text-stone-700 mb-1">
                 Observações
               </label>
               <input
                 type="text"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Ex: Devolução prevista para sexta-feira"
-                className="w-full px-3 py-2 text-xs sm:text-sm rounded-lg border border-slate-200 focus:border-blue-500 focus:outline-hidden"
+                placeholder="Ex: Devolução de sobras prevista na sexta-feira"
+                className="w-full px-3 py-2 text-xs rounded-xl border border-stone-200 bg-[#FAFBF9] focus:bg-white focus:outline-hidden"
               />
             </div>
           </div>
 
-          {/* Digital Signature Pad for Saída */}
-          {type === 'saida' && (
-            <div className="pt-1">
-              <DigitalSignaturePad
-                onSaveSignature={(data) => setSignatureData(data)}
-                onClearSignature={() => setSignatureData('')}
-              />
-            </div>
-          )}
+          {/* Digital Signature Pad */}
+          <div className="pt-1">
+            <DigitalSignaturePad
+              onSave={setSignatureData}
+              onClear={() => setSignatureData('')}
+            />
+          </div>
 
-          {/* Print Receipt Option */}
-          {type === 'saida' && (
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Printer className="w-4 h-4 text-slate-600" />
-                <div>
-                  <span className="text-xs font-bold text-slate-800">
-                    Gerar Comprovante / Termo de Cautela
-                  </span>
-                  <p className="text-[11px] text-slate-500">
-                    Abre janela formatada para impressão com assinatura do solicitante
-                  </p>
-                </div>
-              </div>
-              <input
-                type="checkbox"
-                checked={printReceipt}
-                onChange={(e) => setPrintReceipt(e.target.checked)}
-                className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer"
-              />
-            </div>
-          )}
+          {/* Print Receipt Checkbox */}
+          <div className="flex items-center gap-2 pt-1">
+            <input
+              type="checkbox"
+              id="printReceipt"
+              checked={printReceipt}
+              onChange={(e) => setPrintReceipt(e.target.checked)}
+              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-stone-300 cursor-pointer"
+            />
+            <label htmlFor="printReceipt" className="text-xs text-stone-700 font-medium cursor-pointer flex items-center gap-1">
+              <Printer className="w-3.5 h-3.5 text-stone-500" />
+              Abrir comprovante oficial de retirada para impressão / assinatura física
+            </label>
+          </div>
 
           {/* Error Message */}
           {error && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-700 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <div className="p-3 bg-[#FFF5F5] border border-[#FED7D7] rounded-xl text-xs text-[#991B1B] flex items-center gap-2 font-medium">
+              <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
-          {/* Footer Actions */}
-          <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-2.5">
+          {/* Modal Footer */}
+          <div className="pt-3 border-t border-stone-100 flex items-center justify-end gap-2.5">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs sm:text-sm font-medium text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors"
+              className="px-4 py-2 text-xs font-medium text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className={`inline-flex items-center gap-2 px-5 py-2 text-xs sm:text-sm font-bold text-white rounded-xl shadow-2xs transition-colors ${
-                type === 'entrada' ? 'bg-[#2D6A4F] hover:bg-[#23563F]' : 'bg-[#991B1B] hover:bg-[#7F1D1D]'
+              className={`px-5 py-2 text-xs font-semibold rounded-xl text-white shadow-2xs transition-colors flex items-center gap-1.5 ${
+                type === 'entrada'
+                  ? 'bg-[#2D6A4F] hover:bg-[#23563F]'
+                  : 'bg-[#B45309] hover:bg-[#92400E]'
               }`}
             >
               <CheckCircle2 className="w-4 h-4" />
-              Confirmar {type === 'entrada' ? 'Entrada' : 'Saída'}
+              <span>{type === 'entrada' ? 'Confirmar Entrada' : 'Confirmar Saída'}</span>
             </button>
           </div>
         </form>

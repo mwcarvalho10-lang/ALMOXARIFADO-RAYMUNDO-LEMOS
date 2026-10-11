@@ -7,10 +7,7 @@ import {
   Download, 
   Upload, 
   FileText, 
-  Printer, 
-  CheckCircle2, 
-  ShieldCheck,
-  AlertTriangle
+  Printer
 } from 'lucide-react';
 import { InventoryItem, StockMovement, EquipmentLoan } from '@/types/inventory';
 import { playBeep } from '@/lib/audio';
@@ -94,19 +91,19 @@ export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
   const totalPatrimonyValue = items.reduce((acc, i) => acc + (i.quantity * (i.estimatedUnitCost || 0)), 0);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white dark:bg-[#1A2024] rounded-3xl shadow-xl border border-stone-200/80 dark:border-stone-800 w-full max-w-xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/30 backdrop-blur-xs overflow-y-auto">
+      <div className="bg-white rounded-3xl shadow-xl border border-stone-200/80 w-full max-w-xl my-8 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="px-6 py-4 bg-[#FAFBF9] dark:bg-[#151A1D] border-b border-stone-200/80 dark:border-stone-800 flex items-center justify-between">
+        <div className="px-6 py-4 bg-[#FAFBF9] border-b border-stone-200/80 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 bg-[#EAF4EE] dark:bg-emerald-950/60 text-[#245D40] dark:text-emerald-300 rounded-xl">
+            <div className="p-2 bg-[#EAF4EE] text-[#1E4620] rounded-xl border border-[#CFE7D8]">
               <Database className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">
+              <h3 className="text-base font-bold text-stone-900">
                 Segurança Patrimonial & Backup
               </h3>
-              <p className="text-xs text-stone-500 dark:text-stone-400">
+              <p className="text-xs text-stone-500">
                 Exportação de dados e relatório para o Conselho Escolar / APM
               </p>
             </div>
@@ -122,16 +119,16 @@ export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
         {/* Content */}
         <div className="p-6 space-y-4 text-xs">
           {/* Summary Banner */}
-          <div className="p-3.5 rounded-2xl bg-[#F8F9FA] dark:bg-stone-800/50 border border-stone-200/70 dark:border-stone-700 flex items-center justify-between">
+          <div className="p-3.5 rounded-2xl bg-[#F8FAF9] border border-stone-200/80 flex items-center justify-between">
             <div>
-              <div className="font-semibold text-stone-800 dark:text-stone-200">{schoolName}</div>
+              <div className="font-semibold text-stone-800">{schoolName}</div>
               <div className="text-[11px] text-stone-500">
                 {items.length} materiais cadastrados · {movements.length} movimentações registradas
               </div>
             </div>
             <div className="text-right">
-              <div className="text-[10px] text-stone-400 uppercase">Patrimônio Estimado</div>
-              <div className="font-bold text-emerald-800 dark:text-emerald-300 text-sm tabular-nums">
+              <div className="text-[10px] text-stone-400 uppercase tracking-wider font-medium">Patrimônio Estimado</div>
+              <div className="font-bold text-[#1E4620] text-sm tabular-nums">
                 {totalPatrimonyValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
               </div>
             </div>
@@ -139,10 +136,10 @@ export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
 
           {/* Backup Options */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="p-4 rounded-2xl border border-stone-200/80 dark:border-stone-800 hover:border-emerald-300 flex flex-col justify-between space-y-3">
+            <div className="p-4 rounded-2xl bg-white border border-stone-200/80 hover:border-[#2D6A4F]/50 flex flex-col justify-between space-y-3 transition-colors">
               <div>
-                <div className="flex items-center gap-2 font-bold text-stone-900 dark:text-stone-100 mb-1">
-                  <Download className="w-4 h-4 text-emerald-700" />
+                <div className="flex items-center gap-2 font-bold text-stone-900 mb-1">
+                  <Download className="w-4 h-4 text-[#2D6A4F]" />
                   Salvar Backup (JSON)
                 </div>
                 <p className="text-[11px] text-stone-500 leading-snug">
@@ -157,9 +154,9 @@ export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
               </button>
             </div>
 
-            <div className="p-4 rounded-2xl border border-stone-200/80 dark:border-stone-800 hover:border-sky-300 flex flex-col justify-between space-y-3">
+            <div className="p-4 rounded-2xl bg-white border border-stone-200/80 hover:border-sky-400 flex flex-col justify-between space-y-3 transition-colors">
               <div>
-                <div className="flex items-center gap-2 font-bold text-stone-900 dark:text-stone-100 mb-1">
+                <div className="flex items-center gap-2 font-bold text-stone-900 mb-1">
                   <Upload className="w-4 h-4 text-sky-700" />
                   Restaurar Backup
                 </div>
@@ -184,9 +181,9 @@ export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
           </div>
 
           {/* Accountability Print Box */}
-          <div className="p-4 rounded-2xl bg-[#FFFDF7] dark:bg-amber-950/20 border border-[#FBE8CE] dark:border-amber-900/40 flex items-center justify-between gap-3">
+          <div className="p-4 rounded-2xl bg-[#FFFDF7] border border-[#FBE8CE] flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <div className="font-semibold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
+              <div className="font-semibold text-amber-900 flex items-center gap-1.5">
                 <FileText className="w-4 h-4 text-amber-600" />
                 Relatório de Prestação de Contas (APM & Conselho)
               </div>
@@ -196,7 +193,7 @@ export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
             </div>
             <button
               onClick={handlePrintAccountabilityReport}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-stone-800 border border-stone-200 text-stone-700 dark:text-stone-300 rounded-xl font-medium shrink-0 hover:bg-stone-50"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-stone-200 text-stone-700 rounded-xl font-medium shrink-0 hover:bg-stone-50 transition-colors shadow-2xs"
             >
               <Printer className="w-3.5 h-3.5" />
               Imprimir
@@ -207,7 +204,7 @@ export const SchoolDataBackupModal: React.FC<SchoolDataBackupModalProps> = ({
           <div className="pt-2 flex justify-end">
             <button
               onClick={onClose}
-              className="px-4 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium"
+              className="px-4 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium transition-colors"
             >
               Fechar
             </button>
